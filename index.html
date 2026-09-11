@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Escena 8-Bits - Romántica Noche</title>
+  <title>Escena 8-Bits</title>
   <style>
     body {
-      background-color: #0d0e15;
+      background-color: #0b0c10;
       color: #ffffff;
       font-family: 'Courier New', Courier, monospace;
       display: flex;
@@ -16,42 +16,35 @@
       margin: 0;
     }
 
-    h1 {
-      font-size: 18px;
-      margin-bottom: 8px;
-      color: #ff79c6;
-      text-shadow: 2px 2px #000;
-      letter-spacing: 1px;
-    }
-
     .game-container {
       position: relative;
       border: 4px solid #fff;
-      box-shadow: 0 0 20px rgba(255, 121, 198, 0.4);
+      box-shadow: 0 0 25px rgba(255, 121, 198, 0.3);
       background: #000;
     }
 
     canvas {
       display: block;
-      image-rendering: pixelated; /* Mantiene los píxeles nítidos sin desenfoque */
+      image-rendering: pixelated;
     }
 
     .controls {
-      margin-top: 12px;
+      margin-top: 16px;
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
 
     button {
       background: #bd93f9;
       border: 2px solid #fff;
       color: #000;
-      padding: 8px 16px;
+      padding: 10px 18px;
       font-family: 'Courier New', Courier, monospace;
       font-weight: bold;
       cursor: pointer;
       text-transform: uppercase;
       box-shadow: 3px 3px 0px #000;
+      transition: all 0.1s ease;
     }
 
     button:hover {
@@ -67,198 +60,203 @@
 </head>
 <body>
 
-  <h1>[ 8-BIT ROMANTIC CUTSCENE ]</h1>
-
   <div class="game-container">
     <canvas id="gameCanvas" width="256" height="224"></canvas>
   </div>
 
   <div class="controls">
-    <button onclick="startAnimation()">▶ Reproducir Animación</button>
-    <button onclick="resetAnimation()">↺ Reiniciar Scene</button>
+    <button onclick="startAnimation()">▶ Reproducir</button>
+    <button onclick="resetAnimation()">↺ Reiniciar</button>
   </div>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Escalar la vista sin perder el estilo Pixel Art (256x224 escalado x3)
+    // Escalar la vista sin perder la nitidez de píxeles (256x224 a escala 3x)
     canvas.style.width = (canvas.width * 3) + 'px';
     canvas.style.height = (canvas.height * 3) + 'px';
 
     let frame = 0;
-    let animState = 0; // 0: Inicio, 1: Acercándose, 2: Flores + Ojos Corazón, 3: Beso + Corazones
+    let animState = 0; // 0: Inicio, 1: Caminar, 2: Flores + Ojos Corazón, 3: Beso
     let timer = 0;
     let particles = [];
 
-    // Posiciones de los personajes
-    let boyX = 70;
-    let girlX = 170;
+    // Posiciones iniciales
+    let boyX = 65;
+    let girlX = 175;
 
     function drawPixelRect(x, y, w, h, color) {
       ctx.fillStyle = color;
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // Fondo: Noche, Ciudad, Faro de Luz, Carro Negro
+    // Fondo: Noche, Luna, Ciudad, Carro Negro Deportivo
     function drawBackground() {
-      // Cielo nocturno
-      drawPixelRect(0, 0, 256, 150, '#0a0a1a');
+      // Cielo Nocturno
+      drawPixelRect(0, 0, 256, 160, '#090a14');
 
-      // Estrellas titilantes
-      ctx.fillStyle = '#ffffff';
-      let starCoords = [[20, 15], [50, 30], [90, 10], [140, 25], [190, 12], [230, 35]];
-      starCoords.forEach(([sx, sy], i) => {
-        if ((frame + i * 10) % 40 < 25) {
-          drawPixelRect(sx, sy, 2, 2, '#fff');
+      // Estrellas
+      let stars = [[15, 20], [45, 35], [85, 15], [135, 28], [175, 18], [225, 40], [200, 70], [30, 80]];
+      stars.forEach(([sx, sy], i) => {
+        if ((frame + i * 12) % 45 < 30) {
+          drawPixelRect(sx, sy, 2, 2, '#ffffff');
         }
       });
 
-      // Luna de píxeles
-      drawPixelRect(210, 15, 16, 16, '#ffffcc');
-      drawPixelRect(208, 17, 20, 12, '#ffffcc');
+      // Luna brillante
+      drawPixelRect(210, 15, 18, 18, '#ffffe0');
+      drawPixelRect(208, 18, 22, 12, '#ffffe0');
 
-      // Silueta de Ciudad
-      drawPixelRect(10, 80, 25, 70, '#121324');
-      drawPixelRect(40, 60, 30, 90, '#191a33');
-      drawPixelRect(80, 90, 20, 60, '#121324');
-      drawPixelRect(150, 70, 35, 80, '#191a33');
-      drawPixelRect(190, 85, 25, 65, '#121324');
+      // Siluetas de edificios en el horizonte
+      drawPixelRect(10, 85, 30, 75, '#121324');
+      drawPixelRect(45, 65, 35, 95, '#181a30');
+      drawPixelRect(85, 95, 25, 65, '#121324');
+      drawPixelRect(150, 75, 40, 85, '#181a30');
+      drawPixelRect(195, 90, 30, 70, '#121324');
 
-      // Ventanitas amarillas en la ciudad
-      drawPixelRect(48, 70, 3, 4, '#ffb86c');
-      drawPixelRect(56, 85, 3, 4, '#ffb86c');
-      drawPixelRect(160, 80, 3, 4, '#ffb86c');
+      // Luces lejanas de los edificios
+      drawPixelRect(53, 75, 3, 4, '#ffb86c');
+      drawPixelRect(62, 90, 3, 4, '#f1fa8c');
+      drawPixelRect(162, 85, 3, 4, '#ff79c6');
 
-      // Calle / Asfalto
-      drawPixelRect(0, 150, 256, 74, '#282a36');
-      drawPixelRect(0, 150, 256, 4, '#44475a');
+      // Suelo / Calle
+      drawPixelRect(0, 160, 256, 64, '#21222c');
+      drawPixelRect(0, 160, 256, 3, '#44475a');
 
-      // Farola
-      drawPixelRect(20, 90, 4, 60, '#6272a4');
-      drawPixelRect(16, 86, 12, 4, '#6272a4');
-      drawPixelRect(18, 88, 8, 4, '#f1fa8c'); // Luz
-      // Resplandor farola
-      ctx.fillStyle = 'rgba(241, 250, 140, 0.08)';
+      // Farola de calle
+      drawPixelRect(25, 95, 4, 65, '#6272a4');
+      drawPixelRect(21, 91, 12, 4, '#6272a4');
+      drawPixelRect(23, 93, 8, 3, '#ffffa0'); // Luz farola
+      ctx.fillStyle = 'rgba(255, 255, 160, 0.07)';
       ctx.beginPath();
-      ctx.moveTo(22, 92);
-      ctx.lineTo(2, 170);
-      ctx.lineTo(60, 170);
+      ctx.moveTo(27, 96);
+      ctx.lineTo(5, 180);
+      ctx.lineTo(65, 180);
       ctx.fill();
 
-      // Carro Negro
-      let carX = 100;
-      let carY = 130;
-      drawPixelRect(carX, carY + 10, 70, 18, '#111'); // Cuerpo
-      drawPixelRect(carX + 10, carY, 45, 12, '#1a1a1a'); // Techo
-      drawPixelRect(carX + 15, carY + 2, 15, 8, '#6272a4'); // Ventana izq
-      drawPixelRect(carX + 35, carY + 2, 15, 8, '#6272a4'); // Ventana der
-      drawPixelRect(carX + 68, carY + 14, 3, 4, '#ff5555'); // Luz trasera
-      // Ruedas
-      drawPixelRect(carX + 12, carY + 24, 12, 10, '#000');
-      drawPixelRect(carX + 50, carY + 24, 12, 10, '#000');
-      drawPixelRect(carX + 15, carY + 27, 6, 4, '#6272a4');
-      drawPixelRect(carX + 53, carY + 27, 6, 4, '#6272a4');
+      // Carro Negro Deportivo
+      let carX = 90;
+      let carY = 135;
+      drawPixelRect(carX, carY + 10, 76, 18, '#111116'); // Chasis
+      drawPixelRect(carX + 12, carY, 48, 12, '#181920'); // Techo
+      drawPixelRect(carX + 16, carY + 2, 16, 8, '#383a59'); // Ventana izq
+      drawPixelRect(carX + 38, carY + 2, 18, 8, '#383a59'); // Ventana der
+      drawPixelRect(carX + 2, carY + 12, 4, 5, '#ff5555'); // Faro trasero
+      // Llantas
+      drawPixelRect(carX + 12, carY + 24, 14, 10, '#000');
+      drawPixelRect(carX + 52, carY + 24, 14, 10, '#000');
+      drawPixelRect(carX + 16, carY + 27, 6, 4, '#6272a4');
+      drawPixelRect(carX + 56, carY + 27, 6, 4, '#6272a4');
     }
 
-    // Dibujar al Chico (Musculoso, audífonos, camiseta negra de gym)
-    function drawBoy(x, y, showFlowers = false, posture = 'normal') {
-      // Cabello
-      drawPixelRect(x + 2, y, 12, 5, '#282a36');
-      // Audífonos
-      drawPixelRect(x, y + 2, 3, 6, '#ff5555');
-      drawPixelRect(x + 13, y + 2, 3, 6, '#ff5555');
-      drawPixelRect(x + 2, y - 1, 12, 2, '#44475a');
+    // Dibujar a ÉL (Audífonos grandes, físico musculoso, camiseta negra con dibujo rojo)
+    function drawBoy(x, y, showFlowers = false, pose = 'normal') {
+      // Cabello castaño/oscuro peinado
+      drawPixelRect(x + 2, y, 12, 5, '#211613');
 
-      // Cara
-      drawPixelRect(x + 3, y + 4, 10, 8, '#f1c27d');
-      drawPixelRect(x + 5, y + 7, 2, 2, '#000'); // Ojo izq
-      drawPixelRect(x + 9, y + 7, 2, 2, '#000'); // Ojo der
-      drawPixelRect(x + 6, y + 10, 4, 1, '#b06d51'); // Sonrisa
+      // Audífonos de Diadema
+      drawPixelRect(x - 1, y + 2, 4, 7, '#282a36');
+      drawPixelRect(x + 13, y + 2, 4, 7, '#282a36');
+      drawPixelRect(x + 1, y - 2, 14, 3, '#44475a');
 
-      // Cuerpo musculoso (Camiseta negra)
-      drawPixelRect(x + 1, y + 12, 14, 14, '#191919');
-      drawPixelRect(x + 5, y + 15, 6, 6, '#ff5555'); // Logo / detalle en pecho
+      // Rostro
+      drawPixelRect(x + 3, y + 4, 10, 9, '#f1c27d');
+      drawPixelRect(x + 5, y + 7, 2, 2, '#111'); // Ojo izq
+      drawPixelRect(x + 9, y + 7, 2, 2, '#111'); // Ojo der
+      drawPixelRect(x + 6, y + 10, 4, 1, '#9e5638'); // Sonrisa
 
-      // Brazos
-      if (posture === 'hug') {
-        drawPixelRect(x + 12, y + 13, 8, 4, '#f1c27d');
+      // Camiseta Negra con Estampado Rojo
+      drawPixelRect(x + 1, y + 13, 14, 14, '#121214');
+      drawPixelRect(x + 4, y + 16, 8, 6, '#ff5555'); // Estampado rojo
+
+      // Brazos Musculosos
+      if (pose === 'hug') {
+        drawPixelRect(x + 12, y + 14, 8, 5, '#f1c27d');
       } else {
-        drawPixelRect(x - 3, y + 13, 4, 10, '#f1c27d'); // Brazo izq
-        drawPixelRect(x + 15, y + 13, 4, 10, '#f1c27d'); // Brazo der
+        // Brazos definidos a los lados
+        drawPixelRect(x - 4, y + 13, 5, 11, '#f1c27d');
+        drawPixelRect(x + 15, y + 13, 5, 11, '#f1c27d');
       }
 
-      // Ramos de Flores (si las saca)
+      // Ramo de Flores
       if (showFlowers) {
         let fx = x + 14;
-        let fy = y + 12;
-        drawPixelRect(fx, fy + 4, 3, 8, '#50fa7b'); // Tallo
-        drawPixelRect(fx - 4, fy - 2, 10, 8, '#ff79c6'); // Flores rosas
-        drawPixelRect(fx - 2, fy - 4, 6, 8, '#ffb86c'); // Flores amarillas
-        drawPixelRect(fx - 1, fy - 1, 4, 4, '#ff5555'); // Centro
+        let fy = y + 11;
+        drawPixelRect(fx + 2, fy + 5, 3, 9, '#50fa7b'); // Tallo
+        drawPixelRect(fx - 3, fy - 3, 12, 9, '#ff79c6'); // Flores rosa
+        drawPixelRect(fx - 1, fy - 5, 8, 9, '#ffb86c'); // Flores amarillas
+        drawPixelRect(fx + 1, fy - 1, 4, 4, '#ff5555'); // Centro
       }
 
-      // Pantalones holgados negros y tenis
-      drawPixelRect(x + 2, y + 26, 12, 12, '#21222c');
-      drawPixelRect(x + 1, y + 38, 5, 4, '#f8f8f2');
-      drawPixelRect(x + 10, y + 38, 5, 4, '#f8f8f2');
+      // Pantalones oscuros estilo gym con detalles blancos
+      drawPixelRect(x + 2, y + 27, 12, 13, '#191a21');
+      drawPixelRect(x + 2, y + 28, 2, 10, '#f8f8f2'); // Línea lateral
+      drawPixelRect(x + 1, y + 40, 5, 4, '#282a36');
+      drawPixelRect(x + 10, y + 40, 5, 4, '#282a36');
     }
 
-    // Dibujar a la Chica (Cabello largo negro con mechas rojas, lentes)
-    function drawGirl(x, y, heartEyes = false, posture = 'normal') {
-      // Cabello Largo Negro
-      drawPixelRect(x - 2, y - 2, 18, 22, '#111');
-      // Mechas Rojas en el cabello
-      drawPixelRect(x, y, 4, 14, '#ff5555');
-      drawPixelRect(x + 10, y + 2, 4, 12, '#ff5555');
+    // Dibujar a ELLA (Cabello largo oscuro con mechas rojas, flequillo, lentes cat-eye)
+    function drawGirl(x, y, heartEyes = false, pose = 'normal') {
+      // Cabello largo negro
+      drawPixelRect(x - 3, y - 2, 20, 24, '#0f0f14');
 
-      // Cara
+      // Flequillo y Mechas Rojas
+      drawPixelRect(x + 1, y - 1, 12, 4, '#ff3344'); // Mechas frontales
+      drawPixelRect(x - 2, y + 2, 4, 16, '#ff3344');  // Mecha lateral izq
+      drawPixelRect(x + 12, y + 4, 4, 14, '#ff3344'); // Mecha lateral der
+
+      // Rostro
       drawPixelRect(x + 3, y + 4, 10, 8, '#ffdbac');
 
-      // Lentes negros
-      drawPixelRect(x + 3, y + 5, 10, 4, '#000');
-      drawPixelRect(x + 4, y + 6, 3, 2, '#fff');
-      drawPixelRect(x + 9, y + 6, 3, 2, '#fff');
+      // Lentes estilo Cat-Eye Negros
+      drawPixelRect(x + 2, y + 4, 12, 4, '#000');
+      drawPixelRect(x + 1, y + 3, 3, 2, '#000');
+      drawPixelRect(x + 12, y + 3, 3, 2, '#000');
+      // Cristales de los lentes
+      drawPixelRect(x + 3, y + 5, 3, 2, '#f8f8f2');
+      drawPixelRect(x + 10, y + 5, 3, 2, '#f8f8f2');
 
-      // Ojos de Corazón cuando está emocionada
+      // Ojos de Corazón al emocionarse
       if (heartEyes) {
-        drawPixelRect(x + 3, y + 5, 4, 4, '#ff5555');
-        drawPixelRect(x + 9, y + 5, 4, 4, '#ff5555');
-        // Forma de corazón simple
-        drawPixelRect(x + 4, y + 5, 2, 1, '#ff79c6');
-        drawPixelRect(x + 10, y + 5, 2, 1, '#ff79c6');
+        drawPixelRect(x + 3, y + 4, 4, 4, '#ff5555');
+        drawPixelRect(x + 9, y + 4, 4, 4, '#ff5555');
+        drawPixelRect(x + 4, y + 4, 2, 1, '#ff79c6');
+        drawPixelRect(x + 10, y + 4, 2, 1, '#ff79c6');
       }
 
-      drawPixelRect(x + 6, y + 10, 4, 1, '#d14949'); // Labios rojos
+      // Labios Rojos
+      drawPixelRect(x + 6, y + 10, 4, 1, '#ff2244');
 
-      // Cuerpo (Camiseta gráfica oscura)
-      drawPixelRect(x + 3, y + 12, 10, 12, '#282a36');
-      drawPixelRect(x + 5, y + 14, 6, 6, '#ff79c6'); // Impresión en camiseta
+      // Camiseta gráfica oscura
+      drawPixelRect(x + 3, y + 12, 10, 12, '#1e1e28');
+      drawPixelRect(x + 5, y + 14, 6, 6, '#ff79c6'); // Gráfico frontal
 
-      // Brazos (Pose de emoción o abrazo)
-      if (posture === 'excited') {
-        drawPixelRect(x - 3, y + 8, 4, 8, '#ffdbac'); // Manos arriba
-        drawPixelRect(x + 13, y + 8, 4, 8, '#ffdbac');
-      } else if (posture === 'hug') {
+      // Brazos y Poses
+      if (pose === 'excited') {
+        // Manos arriba emocionada
+        drawPixelRect(x - 3, y + 6, 4, 8, '#ffdbac');
+        drawPixelRect(x + 13, y + 6, 4, 8, '#ffdbac');
+      } else if (pose === 'hug') {
         drawPixelRect(x - 4, y + 13, 8, 4, '#ffdbac');
       } else {
         drawPixelRect(x + 1, y + 12, 3, 10, '#ffdbac');
         drawPixelRect(x + 12, y + 12, 3, 10, '#ffdbac');
       }
 
-      // Pantalón y calzado
-      drawPixelRect(x + 4, y + 24, 8, 14, '#44475a');
+      // Pantalón y Zapatos
+      drawPixelRect(x + 4, y + 24, 8, 14, '#282a36');
       drawPixelRect(x + 3, y + 38, 4, 4, '#111');
       drawPixelRect(x + 9, y + 38, 4, 4, '#111');
     }
 
-    // Efecto de corazones flotando al besarse
+    // Partículas de Corazón
     function createHeartParticle(x, y) {
       particles.push({
-        x: x + (Math.random() * 20 - 10),
+        x: x + (Math.random() * 16 - 8),
         y: y,
-        vy: - (Math.random() * 1 + 0.5),
-        life: 40,
+        vy: - (Math.random() * 0.8 + 0.4),
+        life: 50,
         color: Math.random() > 0.5 ? '#ff5555' : '#ff79c6'
       });
     }
@@ -269,7 +267,7 @@
         p.y += p.vy;
         p.life--;
 
-        // Dibujar mini corazón de píxeles
+        // Corazón pixelado
         drawPixelRect(p.x, p.y, 6, 6, p.color);
         drawPixelRect(p.x + 1, p.y - 1, 4, 1, p.color);
         drawPixelRect(p.x + 2, p.y + 6, 2, 1, p.color);
@@ -280,72 +278,54 @@
       }
     }
 
-    // Bocadillo de texto tipo RPG 8-bits
-    function drawTextBox(text) {
-      drawPixelRect(20, 175, 216, 40, '#000');
-      drawPixelRect(22, 177, 212, 36, '#fff');
-      drawPixelRect(24, 179, 208, 32, '#000');
-
-      ctx.fillStyle = '#fff';
-      ctx.font = '10px monospace';
-      ctx.fillText(text, 32, 198);
-    }
-
-    // Bucle principal de animación (Game Loop)
+    // Loop del Canvas
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
 
       drawBackground();
 
-      // Control de estados de la historia
       if (animState === 0) {
-        // Estado 0: Parados frente al coche
-        drawBoy(boyX, 126, false, 'normal');
-        drawGirl(girlX, 126, false, 'normal');
-        drawTextBox("Noche especial cerca del coche...");
+        // Parados frente al carro negro
+        drawBoy(boyX, 116, false, 'normal');
+        drawGirl(girlX, 116, false, 'normal');
       } 
       else if (animState === 1) {
-        // Estado 1: Se acercan
-        if (boyX < 105) boyX += 0.5;
-        if (girlX > 135) girlX -= 0.5;
+        // Acercándose
+        if (boyX < 102) boyX += 0.6;
+        if (girlX > 138) girlX -= 0.6;
 
-        drawBoy(boyX, 126, false, 'normal');
-        drawGirl(girlX, 126, false, 'normal');
-        drawTextBox("Acercándose...");
+        drawBoy(boyX, 116, false, 'normal');
+        drawGirl(girlX, 116, false, 'normal');
 
-        if (boyX >= 105 && girlX <= 135) {
+        if (boyX >= 102 && girlX <= 138) {
           animState = 2;
           timer = 0;
         }
       } 
       else if (animState === 2) {
-        // Estado 2: ÉL saca las flores, ELLA pone ojos de corazón y emoción
+        // ÉL saca las flores, ELLA pone ojos de corazón y se emociona
         timer++;
-        drawBoy(boyX, 126, true, 'normal');
-        drawGirl(girlX, 126, true, 'excited');
-        drawTextBox("¡Un detalle con flores! 😍");
+        drawBoy(boyX, 116, true, 'normal');
+        drawGirl(girlX, 116, true, 'excited');
 
-        if (timer > 90) {
+        if (timer > 80) {
           animState = 3;
-          // Se juntan para el beso
-          boyX = 114;
-          girlX = 122;
+          boyX = 112;
+          girlX = 120;
         }
       } 
       else if (animState === 3) {
-        // Estado 3: ¡SE DAN UN BESO! + Corazones animando
-        drawBoy(boyX, 126, true, 'hug');
-        drawGirl(girlX, 126, true, 'hug');
+        // ¡BESO Y CORAZONES!
+        drawBoy(boyX, 116, true, 'hug');
+        drawGirl(girlX, 116, true, 'hug');
 
-        // Gran corazón sobre ellos
-        drawPixelRect(123, 112, 10, 10, '#ff5555');
+        // Corazón grande sobre ellos
+        drawPixelRect(121, 100, 10, 10, '#ff5555');
 
-        if (frame % 8 === 0) {
-          createHeartParticle(124, 118);
+        if (frame % 7 === 0) {
+          createHeartParticle(122, 106);
         }
-
-        drawTextBox("¡Beso bajo las estrellas! 💖");
       }
 
       updateAndDrawParticles();
@@ -360,13 +340,13 @@
 
     function resetAnimation() {
       animState = 0;
-      boyX = 70;
-      girlX = 170;
+      boyX = 65;
+      girlX = 175;
       timer = 0;
       particles = [];
     }
 
-    // Iniciar bucle del canvas
+    // Iniciar loop
     gameLoop();
   </script>
 </body>
