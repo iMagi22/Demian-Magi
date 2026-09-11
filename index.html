@@ -285,6 +285,38 @@
   .music-btn:hover{ background:rgba(255,79,139,.8); }
   .music-btn.pulsing{ animation:pulse 1.4s infinite; }
 
+  .music-hint{
+    position:fixed;
+    top:18px;
+    right:64px;
+    z-index:50;
+    background:rgba(20,8,24,.9);
+    color:#fff;
+    font-family:'Courier New', monospace;
+    font-size:11px;
+    letter-spacing:.5px;
+    padding:8px 12px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.4);
+    box-shadow:0 2px 8px rgba(0,0,0,.4);
+    white-space:nowrap;
+    opacity:0;
+    transform:translateX(8px);
+    transition:opacity .4s ease, transform .4s ease;
+    pointer-events:none;
+  }
+  .music-hint.show{ opacity:1; transform:translateX(0); }
+  .music-hint::after{
+    content:'';
+    position:absolute;
+    top:14px;
+    right:-6px;
+    width:0; height:0;
+    border-top:6px solid transparent;
+    border-bottom:6px solid transparent;
+    border-left:6px solid rgba(20,8,24,.9);
+  }
+
   @media (max-width:560px){
     .side-strip{ flex:0 0 52px; max-width:52px; min-width:52px; }
     .main-content{ width:calc(100% - 116px); }
@@ -294,6 +326,7 @@
 <body>
 
 <button class="music-btn pulsing" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio (toca para activar el sonido)">🎵</button>
+<div class="music-hint" id="musicHint">toca para activar la música 🎵</div>
 <audio id="bgMusic" loop muted autoplay playsinline style="display:none">
   <source src="musica.mp3" type="audio/mpeg">
 </audio>
@@ -377,6 +410,7 @@
    ================================================================ */
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
+const musicHint = document.getElementById('musicHint');
 let muted = true;
 
 function setMuted(m){
@@ -384,8 +418,13 @@ function setMuted(m){
   bgMusic.muted = m;
   bgMusic.play().catch(()=>{ /* el navegador puede seguir bloqueándolo hasta que haya interacción */ });
   musicToggle.textContent = m ? '🎵' : '🔊';
-  if(!m) musicToggle.classList.remove('pulsing');
+  if(!m){
+    musicToggle.classList.remove('pulsing');
+    musicHint.classList.remove('show');
+  }
 }
+
+setTimeout(() => { if(muted) musicHint.classList.add('show'); }, 900);
 
 window.addEventListener('load', () => { setMuted(true); });
 document.addEventListener('DOMContentLoaded', () => { setMuted(true); });
