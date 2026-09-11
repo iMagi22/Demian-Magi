@@ -210,7 +210,7 @@
       }
     }
 
-    // DIBUJAR A DEMIAN
+    // DIBUJAR A DEMIAN (Sin cuadro blanco)
     function drawBoy(x, y, showFlowers = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -240,11 +240,11 @@
         drawPixelRect(x + 5, y + 12, 6, 1, '#382518');
       }
 
-      // Camiseta Negra
+      // Camiseta Negra con Estampa Roja Estilizada (Sin Cuadro Blanco)
       drawPixelRect(x, y + 16, 16, 17, '#111116');
       drawPixelRect(x + 1, y + 16, 1, 16, '#1a1a22');
-      drawPixelRect(x + 3, y + 19, 10, 9, '#ff3344');
-      drawPixelRect(x + 5, y + 21, 6, 5, '#ffffff');
+      drawPixelRect(x + 3, y + 19, 10, 8, '#a81c2e');
+      drawPixelRect(x + 5, y + 21, 6, 4, '#dc284d');
 
       // Brazos
       if (pose === 'hug') {
@@ -275,7 +275,7 @@
       drawPixelRect(x + 10, y + 55, 6, 1, '#ffffff');
     }
 
-    // DIBUJAR A MAGI (Sin lentes, ojos expresivos y bonita estampa en camiseta)
+    // DIBUJAR A MAGI (Ojos Café)
     function drawGirl(x, y, heartEyes = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -296,13 +296,13 @@
       drawPixelRect(x + 1, y + 10, 3, 2, '#ff99aa');
       drawPixelRect(x + 12, y + 10, 3, 2, '#ff99aa');
 
-      // --- OJOS HERMOSOS SIN LENTES ---
+      // --- OJOS CAFÉS HERMOSOS ---
       if (lookCam) {
         // Mirada a la cámara
-        drawPixelRect(x + 2, y + 5, 3, 4, '#739585'); 
-        drawPixelRect(x + 8, y + 5, 3, 4, '#739585'); 
-        drawPixelRect(x + 2, y + 5, 2, 2, '#111116'); 
-        drawPixelRect(x + 8, y + 5, 2, 2, '#111116');
+        drawPixelRect(x + 2, y + 5, 3, 4, '#6a432d'); // Café
+        drawPixelRect(x + 8, y + 5, 3, 4, '#6a432d'); 
+        drawPixelRect(x + 2, y + 5, 2, 2, '#1a100a'); 
+        drawPixelRect(x + 8, y + 5, 2, 2, '#1a100a');
         drawPixelRect(x + 4, y + 5, 1, 1, '#ffffff'); // Destello
         drawPixelRect(x + 10, y + 5, 1, 1, '#ffffff');
       } else if (heartEyes) {
@@ -312,12 +312,12 @@
         drawPixelRect(x + 3, y + 5, 2, 2, '#ff79c6');
         drawPixelRect(x + 9, y + 5, 2, 2, '#ff79c6');
       } else {
-        // Ojos expresivos de frente
-        drawPixelRect(x + 2, y + 5, 3, 4, '#739585'); // Color verde/miel
-        drawPixelRect(x + 8, y + 5, 3, 4, '#739585');
-        drawPixelRect(x + 3, y + 6, 2, 3, '#111116'); // Pupila
-        drawPixelRect(x + 9, y + 6, 2, 3, '#111116');
-        drawPixelRect(x + 2, y + 5, 1, 1, '#ffffff'); // Brillo bonito
+        // Ojos expresivos cafés
+        drawPixelRect(x + 2, y + 5, 3, 4, '#6a432d'); // Color café
+        drawPixelRect(x + 8, y + 5, 3, 4, '#6a432d');
+        drawPixelRect(x + 3, y + 6, 2, 3, '#1a100a'); // Pupila
+        drawPixelRect(x + 9, y + 6, 2, 3, '#1a100a');
+        drawPixelRect(x + 2, y + 5, 1, 1, '#ffffff'); // Brillo
         drawPixelRect(x + 8, y + 5, 1, 1, '#ffffff');
         // Pestañas sutiles arriba
         drawPixelRect(x + 1, y + 4, 5, 1, '#0a0a0f');
@@ -327,13 +327,12 @@
       // Labios Rojos
       drawPixelRect(x + 5, y + 12, 5, 2, '#d62839');
 
-      // Camiseta Negra con Estampa de Estilo Rock/Gótico Bonita (Sin cuadro blanco)
+      // Camiseta Negra con Estampa
       drawPixelRect(x + 1, y + 15, 14, 16, '#0f1015');
-      // Arte en la playera: Diseño estilizado en borgoña/rojo con detalle de corazón/arte
       drawPixelRect(x + 3, y + 17, 10, 11, '#7a1122'); 
       drawPixelRect(x + 4, y + 18, 8, 9, '#bc1b3b');   
-      drawPixelRect(x + 6, y + 19, 4, 4, '#ff3366');   // Corazón/Grafico central
-      drawPixelRect(x + 5, y + 24, 6, 2, '#0f1015');   // Detalle inferior
+      drawPixelRect(x + 6, y + 19, 4, 4, '#ff3366');   
+      drawPixelRect(x + 5, y + 24, 6, 2, '#0f1015');   
 
       // Brazos
       if (pose === 'excited') {
