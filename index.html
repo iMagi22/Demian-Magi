@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rata de Ciudad - Lectura Ultra Tranquila 8-Bits</title>
+  <title>Rata de Ciudad - Edición Ultra Pausada 8-Bits</title>
   <style>
     body {
       background-color: #050608;
@@ -69,7 +69,7 @@
 </head>
 <body>
 
-  <h1>[ LA RATA DE CIUDAD - LECTURA EXTENDIDA ]</h1>
+  <h1>[ LA RATA DE CIUDAD - LECTURA ULTRA LENTA ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
@@ -173,7 +173,7 @@
     // DIBUJAR RATA
     function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
       let isMoving = (pose === 'walk' || pose === 'run');
-      let speedMult = (pose === 'run') ? 0.3 : 0.15;
+      let speedMult = (pose === 'run') ? 0.25 : 0.1;
       let legOffset = isMoving ? Math.sin(frame * speedMult) * 3 : 0;
       let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.12)) * 4 : 0;
       let actualY = y - happyJump;
@@ -266,14 +266,14 @@
 
     // SUBTÍTULOS
     function drawSubtitle(text, speaker = "") {
-      drawFixedPixelRect(20, 195, 440, 65, '#000000');
-      drawFixedPixelRect(22, 197, 436, 61, '#ffffff');
-      drawFixedPixelRect(24, 199, 432, 57, '#0d1117');
+      drawFixedPixelRect(20, 190, 440, 72, '#000000');
+      drawFixedPixelRect(22, 192, 436, 68, '#ffffff');
+      drawFixedPixelRect(24, 194, 432, 64, '#0d1117');
 
       if (speaker) {
         ctx.fillStyle = '#ff79c6';
         ctx.font = 'bold 11px monospace';
-        ctx.fillText(speaker, 36, 215);
+        ctx.fillText(speaker, 34, 210);
       }
 
       ctx.fillStyle = '#ffffff';
@@ -281,11 +281,11 @@
       
       let lines = text.split('\n');
       lines.forEach((line, index) => {
-        ctx.fillText(line, 36, speaker ? 230 + (index * 13) : 220 + (index * 13));
+        ctx.fillText(line, 34, speaker ? 225 + (index * 13) : 215 + (index * 13));
       });
     }
 
-    // BUCLE NARRATIVO ULTRA LENTO (60 frames = 1 segundo)
+    // BUCLE NARRATIVO CON TIEMPOS MÁXIMOS DE LECTURA (60 FPS = 1 segundo por cada 60 frames)
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
@@ -302,9 +302,9 @@
         // Inicio de Persecución
         catShow = true;
         if (m1X < 240) {
-          m1X += 1.2;
-          m2X += 1.2;
-          catX += 1.15;
+          m1X += 1.0;
+          m2X += 1.0;
+          catX += 0.95;
           drawMouse(m1X, mY, true, false, 'run');
           drawMouse(m2X, mY, true, true, 'run');
         } else {
@@ -314,22 +314,22 @@
         drawSubtitle("¡RÁPIDO! ¡El gato de la ciudad nos ha visto!", "ÉL:");
       }
       else if (state === 2) {
-        // Pausa de escape (~10 segundos)
+        // Pausa de escape (~12 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'scared');
         drawMouse(m2X, mY, true, true, 'scared');
 
         drawSubtitle("¡Corre al escondite detrás de la tubería!\n¡No mires atrás!", "ÉL:");
 
-        if (timer > 600) { state = 3; timer = 0; }
+        if (timer > 720) { state = 3; timer = 0; }
       }
       else if (state === 3) {
         // Escapan
         if (m1X < 500) {
-          m1X += 1.5;
-          m2X += 1.5;
-          catX += 0.6;
-          cameraX += 1.0;
+          m1X += 1.3;
+          m2X += 1.3;
+          catX += 0.5;
+          cameraX += 0.9;
           drawMouse(m1X, mY, true, false, 'run');
           drawMouse(m2X, mY, true, true, 'run');
         } else {
@@ -340,7 +340,7 @@
         drawSubtitle("Logran escabullirse por una grieta estrecha a salvo...");
       }
       else if (state === 4) {
-        // Encuentran el Banquete (~12 segundos)
+        // Encuentran el Banquete (~14 segundos)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
@@ -348,10 +348,10 @@
 
         drawSubtitle("Uff... Lo logramos... perdimos al gato.\nY mira esto... jamás había visto tanta comida junta.", "ÉL:");
 
-        if (timer > 720) { state = 5; timer = 0; }
+        if (timer > 840) { state = 5; timer = 0; }
       }
       else if (state === 5) {
-        // Admiración de la comida (~12 segundos)
+        // Admiración de la comida (~14 segundos)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
@@ -359,13 +359,13 @@
 
         drawSubtitle("Quesos maduros, carne, dulces de panadería...\nEn la ciudad la comida abunda por todas partes.", "ÉL:");
 
-        if (timer > 720) { state = 6; timer = 0; }
+        if (timer > 840) { state = 6; timer = 0; }
       }
       else if (state === 6) {
-        // Ella camina ultra lento
+        // Ella camina ULTRA DESPACIO hacia él
         drawFeast(550, 175);
         if (m2X < 485) {
-          m2X += 0.08; // Súper despacio
+          m2X += 0.05; // Movimiento imperceptible y dulce
           drawMouse(m1X, mY, true, false, 'normal');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
@@ -375,18 +375,18 @@
         drawSubtitle("Ella camina pacíficamente hacia él rodeada del banquete...");
       }
       else if (state === 65) {
-        // Pausa al llegar (~8 segundos)
+        // Pausa al llegar (~10 segundos)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
-        drawSubtitle("Ella mira los manjares y luego lo mira a los ojos...");
+        drawSubtitle("Ella mira los manjares y luego lo mira con ternura...");
 
-        if (timer > 480) { state = 7; timer = 0; }
+        if (timer > 600) { state = 7; timer = 0; }
       }
       else if (state === 7) {
-        // Dialéctica 1 (~14 segundos)
+        // Dialéctica Anime 1 (~16 segundos)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
@@ -394,21 +394,21 @@
 
         drawSubtitle("Dicen que la rata de ciudad vive una vida corta y peligrosa,\nsiempre huyendo de trampas y gatos a cambio de lujos...", "ELLA:");
 
-        if (timer > 840) { state = 8; timer = 0; }
+        if (timer > 960) { state = 8; timer = 0; }
       }
       else if (state === 8) {
-        // Dialéctica Anime 2 (~15 segundos)
+        // Tu frase personalizada (~18 segundos de tiempo de lectura)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
-        drawSubtitle("Muchos arriesgan su vida solo por probar esta deliciosa comida.\nPero para mí, no es la comida lo que le da valor a este riesgo.", "ELLA:");
+        drawSubtitle("Es verdad que la vida de una rata de ciudad es corta...\npero quisiera pasar cada segundo de ella a tu lado.", "ELLA:");
 
-        if (timer > 900) { state = 9; timer = 0; }
+        if (timer > 1080) { state = 9; timer = 0; }
       }
       else if (state === 9) {
-        // Final Romántico Incondicional (Se queda permanente)
+        // Final Romántico Incondicional (Infinito)
         timer++;
         drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'happy');
@@ -418,7 +418,7 @@
           createHeart(m1X + 15, 160);
         }
 
-        drawSubtitle("Si soy una rata de ciudad, no es por el lujo ni por el banquete...\nEs porque en esta ciudad cruel, tú estás a mi lado. 💖", "ELLA:");
+        drawSubtitle("No importa qué tan cruel sea la ciudad ni los gatos que acechen,\nmientras estemos juntos, este lugar es perfecto. 💖", "ELLA:");
       }
 
       updateParticles();
