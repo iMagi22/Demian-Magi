@@ -334,7 +334,7 @@
 <div class="page">
 
   <div class="side-strip left">
-    <canvas id="sunsetL" width="60" height="420"></canvas>
+    <canvas id="sunsetL" width="110" height="440"></canvas>
     <div class="stars-overlay" id="starsOverlayL"></div>
     <div class="hearts-col" id="heartsColL"></div>
   </div>
@@ -443,7 +443,7 @@ musicToggle.addEventListener('click', () => {
 /* ================================================================
    PAISAJE DE AMANECER EN LOS COSTADOS + CORAZONES CAYENDO
    ================================================================ */
-function drawSideLandscape(canvas){
+function drawSideLandscape(canvas, includeMoon){
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
   const w = canvas.width, h = canvas.height;
@@ -462,53 +462,56 @@ function drawSideLandscape(canvas){
     ctx.fillRect(0,y,w,1);
   }
 
-  // luna con sombreado real y halo en capas
-  const mx = w*0.55, my = h*0.15, mr = w*0.30;
+  if(includeMoon){
+    // luna con sombreado real y halo en capas
+    const mx = w*0.55, my = h*0.15, mr = w*0.30;
 
-  const halo = ctx.createRadialGradient(mx,my,mr*0.5, mx,my,mr*2.6);
-  halo.addColorStop(0,'rgba(255,247,224,.28)');
-  halo.addColorStop(0.5,'rgba(255,247,224,.08)');
-  halo.addColorStop(1,'rgba(255,247,224,0)');
-  ctx.fillStyle = halo;
-  ctx.beginPath();
-  ctx.arc(mx,my,mr*2.6,0,Math.PI*2);
-  ctx.fill();
-
-  const moonGrad = ctx.createRadialGradient(mx-mr*0.4, my-mr*0.4, mr*0.15, mx, my, mr*1.05);
-  moonGrad.addColorStop(0, '#fffdf5');
-  moonGrad.addColorStop(0.45, '#fff3d2');
-  moonGrad.addColorStop(0.8, '#f0d9a0');
-  moonGrad.addColorStop(1, '#d8b878');
-  ctx.fillStyle = moonGrad;
-  ctx.beginPath();
-  ctx.arc(mx,my,mr,0,Math.PI*2);
-  ctx.fill();
-
-  // cráteres con sombreado suave
-  const craters = [
-    [-0.35,-0.10,0.16], [0.10,0.32,0.11], [0.36,-0.28,0.10],
-    [-0.05,0.02,0.08], [0.22,0.10,0.07], [-0.22,0.35,0.06]
-  ];
-  craters.forEach(([cx2,cy2,cr2])=>{
-    const px = mx + cx2*mr*2, py = my + cy2*mr*2, pr = cr2*mr*2;
-    ctx.fillStyle = 'rgba(190,160,115,.5)';
+    const halo = ctx.createRadialGradient(mx,my,mr*0.5, mx,my,mr*2.6);
+    halo.addColorStop(0,'rgba(255,247,224,.28)');
+    halo.addColorStop(0.5,'rgba(255,247,224,.08)');
+    halo.addColorStop(1,'rgba(255,247,224,0)');
+    ctx.fillStyle = halo;
     ctx.beginPath();
-    ctx.arc(px, py, pr, 0, Math.PI*2);
+    ctx.arc(mx,my,mr*2.6,0,Math.PI*2);
     ctx.fill();
-    ctx.fillStyle = 'rgba(255,250,235,.35)';
-    ctx.beginPath();
-    ctx.arc(px - pr*0.25, py - pr*0.25, pr*0.4, 0, Math.PI*2);
-    ctx.fill();
-  });
 
-  // sombra sutil del lado oscuro
-  const shadow = ctx.createRadialGradient(mx+mr*0.5, my+mr*0.5, mr*0.2, mx, my, mr*1.02);
-  shadow.addColorStop(0, 'rgba(120,90,60,.25)');
-  shadow.addColorStop(1, 'rgba(120,90,60,0)');
-  ctx.fillStyle = shadow;
-  ctx.beginPath();
-  ctx.arc(mx,my,mr,0,Math.PI*2);
-  ctx.fill();
+    const moonGrad = ctx.createRadialGradient(mx-mr*0.4, my-mr*0.4, mr*0.15, mx, my, mr*1.05);
+    moonGrad.addColorStop(0, '#fffdf5');
+    moonGrad.addColorStop(0.45, '#fff3d2');
+    moonGrad.addColorStop(0.8, '#f0d9a0');
+    moonGrad.addColorStop(1, '#d8b878');
+    ctx.fillStyle = moonGrad;
+    ctx.beginPath();
+    ctx.arc(mx,my,mr,0,Math.PI*2);
+    ctx.fill();
+
+    // cráteres con sombreado suave
+    const craters = [
+      [-0.35,-0.10,0.16], [0.10,0.32,0.11], [0.36,-0.28,0.10],
+      [-0.05,0.02,0.08], [0.22,0.10,0.07], [-0.22,0.35,0.06],
+      [0.02,-0.30,0.05], [-0.30,0.20,0.045], [0.28,0.32,0.04]
+    ];
+    craters.forEach(([cx2,cy2,cr2])=>{
+      const px = mx + cx2*mr*2, py = my + cy2*mr*2, pr = cr2*mr*2;
+      ctx.fillStyle = 'rgba(190,160,115,.5)';
+      ctx.beginPath();
+      ctx.arc(px, py, pr, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,250,235,.35)';
+      ctx.beginPath();
+      ctx.arc(px - pr*0.25, py - pr*0.25, pr*0.4, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // sombra sutil del lado oscuro
+    const shadow = ctx.createRadialGradient(mx+mr*0.5, my+mr*0.5, mr*0.2, mx, my, mr*1.02);
+    shadow.addColorStop(0, 'rgba(120,90,60,.25)');
+    shadow.addColorStop(1, 'rgba(120,90,60,0)');
+    ctx.fillStyle = shadow;
+    ctx.beginPath();
+    ctx.arc(mx,my,mr,0,Math.PI*2);
+    ctx.fill();
+  }
 
   // estrellas de varios tamaños, repartidas en TODA la altura
   ctx.fillStyle = '#ffffff';
@@ -550,8 +553,8 @@ function drawSideLandscape(canvas){
     ctx.fillRect(x, h-mh, 1, mh);
   }
 }
-drawSideLandscape(document.getElementById('sunsetL'));
-drawSideLandscape(document.getElementById('sunsetR'));
+drawSideLandscape(document.getElementById('sunsetL'), true);
+drawSideLandscape(document.getElementById('sunsetR'), false);
 
 function spawnTwinkleStars(container, count){
   for(let i=0;i<count;i++){
@@ -568,8 +571,8 @@ function spawnTwinkleStars(container, count){
     container.appendChild(s);
   }
 }
-spawnTwinkleStars(document.getElementById('starsOverlayL'), 30);
-spawnTwinkleStars(document.getElementById('starsOverlayR'), 30);
+spawnTwinkleStars(document.getElementById('starsOverlayL'), 46);
+spawnTwinkleStars(document.getElementById('starsOverlayR'), 46);
 
 function spawnSideHearts(container, stripWidth){
   function spawn(){
