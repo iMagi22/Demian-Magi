@@ -5,7 +5,7 @@
   <title>Escena 8-Bits - Demian y Ella</title>
   <style>
     body {
-      background-color: #07080d;
+      background-color: #050608;
       color: #ffffff;
       font-family: 'Courier New', Courier, monospace;
       display: flex;
@@ -92,13 +92,13 @@
     let animState = 0; 
     /*
       0: Inicio parados frente al auto
-      1: "¡Mira, una cámara de seguridad!" (Demian señala arriba)
-      2: Ambos VOLTEAN EL ROSTRO hacia la cámara de seguridad
-      3: Demian va a la puerta trasera del auto (que está justo detrás)
-      4: Abre la puerta trasera y toma las flores
+      1: "¡Mira, una cámara de seguridad!" (Demian señala)
+      2: Ambos VOLTEAN a la cámara de seguridad
+      3: Demian va a la puerta trasera (a la derecha del auto)
+      4: Abre la puerta trasera y saca el ramo
       5: Vuelve con ella y le entrega el ramo
-      6: Ella reacciona ("¡DEMIAN!") con ojos de corazón
-      7: Beso + Corazones flotando
+      6: Ella reacciona ("¡DEMIAN!") emocionada
+      7: Beso + Corazones
     */
 
     let timer = 0;
@@ -106,7 +106,7 @@
 
     // Posiciones
     let girlX = 175;
-    let boyX = 215;
+    let boyX = 210;
     let doorOpen = false;
 
     function drawPixelRect(x, y, w, h, color) {
@@ -114,12 +114,14 @@
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // FONDO (Casa, cámara, calle y CARRO JUSTO DETRÁS DE ELLOS)
+    // NOCHE DETALLADA (Cielo, nubes pixel, casas secundarias, luz urbana)
     function drawBackground() {
-      // Cielo Nocturno
-      drawPixelRect(0, 0, 480, 190, '#080911');
+      // Degradado del Cielo Nocturno
+      drawPixelRect(0, 0, 480, 80, '#060712');
+      drawPixelRect(0, 80, 480, 60, '#0a0d1d');
+      drawPixelRect(0, 140, 480, 50, '#111528');
 
-      // Estrellas
+      // Estrellas Titilantes
       let stars = [
         [15, 20], [50, 35], [90, 15], [140, 28], [210, 15], [260, 35], 
         [320, 18], [370, 40], [420, 12], [450, 50], [180, 55], [300, 70]
@@ -130,71 +132,98 @@
         }
       });
 
-      // Luna
-      drawPixelRect(410, 20, 24, 24, '#ffffd0');
-      drawPixelRect(406, 24, 32, 16, '#ffffd0');
+      // Luna brillante
+      drawPixelRect(410, 18, 24, 24, '#ffffd0');
+      drawPixelRect(406, 22, 32, 16, '#ffffd0');
 
-      // --- CASA CON CÁMARA (Izquierda) ---
-      drawPixelRect(0, 40, 130, 150, '#212431');
-      drawPixelRect(0, 30, 140, 10, '#151720');
-      drawPixelRect(0, 22, 135, 8, '#ff3344');
+      // Nubes flotantes lentas
+      let cloudOffset = (frame * 0.25) % 520;
+      let clouds = [
+        [cloudOffset - 40, 25], [cloudOffset + 180 - 520, 40], [cloudOffset + 380 - 520, 20]
+      ];
+      clouds.forEach(([cx, cy]) => {
+        drawPixelRect(cx, cy, 50, 8, 'rgba(40, 50, 80, 0.4)');
+        drawPixelRect(cx + 10, cy - 4, 30, 12, 'rgba(40, 50, 80, 0.4)');
+      });
 
-      // Ventana iluminada
+      // --- CASITAS AL FONDO (Siluetas distantes) ---
+      // Casa fondo 1
+      drawPixelRect(130, 110, 45, 80, '#131625');
+      drawPixelRect(138, 125, 10, 12, '#ffe375'); // Ventana encendida
+      drawPixelRect(155, 145, 10, 12, '#1e2338');
+
+      // Casa fondo 2 (edificio pequeño)
+      drawPixelRect(280, 100, 55, 90, '#101322');
+      drawPixelRect(290, 115, 12, 14, '#ffb86c');
+      drawPixelRect(312, 115, 12, 14, '#1a1f33');
+      drawPixelRect(290, 140, 12, 14, '#ffb86c');
+
+      // Casa fondo 3
+      drawPixelRect(380, 118, 60, 72, '#141829');
+      drawPixelRect(395, 130, 14, 18, '#ffe375');
+
+      // --- CASA PRINCIPAL IZQUIERDA CON CÁMARA ---
+      drawPixelRect(0, 40, 130, 150, '#1c1f2e');
+      drawPixelRect(0, 30, 140, 10, '#121420');
+      drawPixelRect(0, 22, 135, 8, '#ff3344'); // Moldura roja
+
+      // Ventana principal cálida
       drawPixelRect(25, 65, 40, 50, '#f1fa8c');
-      drawPixelRect(25, 65, 40, 3, '#151720');
-      drawPixelRect(44, 65, 3, 50, '#151720');
-      drawPixelRect(25, 90, 40, 3, '#151720');
+      drawPixelRect(25, 65, 40, 3, '#121420');
+      drawPixelRect(44, 65, 3, 50, '#121420');
+      drawPixelRect(25, 90, 40, 3, '#121420');
 
-      // Puerta de casa
-      drawPixelRect(85, 120, 35, 70, '#101117');
+      // Puerta
+      drawPixelRect(85, 120, 35, 70, '#0d0e17');
       drawPixelRect(112, 155, 3, 4, '#ffb86c');
 
-      // CÁMARA DE SEGURIDAD (Apuntando hacia ellos)
+      // CÁMARA DE SEGURIDAD (Apuntando a la pareja)
       drawPixelRect(118, 48, 12, 4, '#6272a4');
       drawPixelRect(128, 50, 16, 9, '#f8f8f2');
       drawPixelRect(142, 53, 5, 5, '#111116');
       if (Math.floor(frame / 15) % 2 === 0) {
-        drawPixelRect(138, 51, 3, 3, '#ff3344'); // Luz parpadeante
+        drawPixelRect(138, 51, 3, 3, '#ff3344'); // Luz roja rec
       }
 
-      // --- CARRO NEGRO LITERALLY DETRÁS DE ELLOS ---
-      let carX = 160; // Posicionado justo en el medio tras la pareja
+      // --- CARRO NEGRO (Volteado: Conductor Izq / Puerta Trasera Der, Justo Detrás) ---
+      let carX = 175; 
       let carY = 142;
 
-      // Sombra del coche
-      drawPixelRect(carX - 5, carY + 28, 115, 6, '#08090c');
+      // Sombra
+      drawPixelRect(carX - 5, carY + 28, 115, 6, '#06070a');
 
-      // Carrocería
-      drawPixelRect(carX, carY + 10, 105, 20, '#121319'); 
-      drawPixelRect(carX + 15, carY, 65, 14, '#1b1d26'); // Techo
-      drawPixelRect(carX + 18, carY + 2, 22, 10, '#3e4153'); // Ventana delantera
-      drawPixelRect(carX + 46, carY + 2, 28, 10, '#3e4153'); // Ventana trasera
+      // Carrocería Negra
+      drawPixelRect(carX, carY + 10, 105, 20, '#101117'); 
+      drawPixelRect(carX + 25, carY, 65, 14, '#191b24'); // Techo
+      // Ventanas (Conductor Izquierda, Trasera Derecha)
+      drawPixelRect(carX + 31, carY + 2, 26, 10, '#3d4052'); // Ventana Conductor (Izq)
+      drawPixelRect(carX + 61, carY + 2, 22, 10, '#3d4052'); // Ventana Trasera (Der)
 
-      // Luces
-      drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff3344');   // Faro trasero
-      drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0'); // Faro delantero
+      // Faros
+      drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff2233');   // Luz trasera (Izquierda)
+      drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0'); // Faro delantero (Derecha)
 
-      // PUERTA TRASERA ABIERTA (donde están guardadas las flores)
+      // PUERTA TRASERA ABIERTA (Lado Derecho del auto)
       if (doorOpen) {
-        drawPixelRect(carX + 46, carY + 2, 8, 26, '#050507'); // Interior
-        drawPixelRect(carX + 38, carY + 4, 8, 24, '#252834');  // Puerta abatida
+        drawPixelRect(carX + 61, carY + 2, 8, 26, '#050508'); // Apertura
+        drawPixelRect(carX + 67, carY + 4, 8, 24, '#242735'); // Puerta abierta
       }
 
       // Llantas
-      drawPixelRect(carX + 15, carY + 22, 18, 12, '#050507');
-      drawPixelRect(carX + 70, carY + 22, 18, 12, '#050507');
-      drawPixelRect(carX + 20, carY + 25, 8, 6, '#6272a4');
-      drawPixelRect(carX + 75, carY + 25, 8, 6, '#6272a4');
+      drawPixelRect(carX + 18, carY + 22, 18, 12, '#050507');
+      drawPixelRect(carX + 72, carY + 22, 18, 12, '#050507');
+      drawPixelRect(carX + 23, carY + 25, 8, 6, '#6272a4');
+      drawPixelRect(carX + 77, carY + 25, 8, 6, '#6272a4');
 
-      // --- SUELO / CALLE ---
-      drawPixelRect(0, 190, 480, 80, '#161720');
-      drawPixelRect(0, 190, 480, 4, '#34364e');
+      // --- SUELO Y BANQUETA ---
+      drawPixelRect(0, 190, 480, 80, '#14151e');
+      drawPixelRect(0, 190, 480, 4, '#32344a');
       for(let i = 0; i < 480; i += 50) {
-        drawPixelRect(i, 230, 25, 3, '#252633');
+        drawPixelRect(i, 230, 25, 3, '#222330');
       }
     }
 
-    // DIBUJAR A DEMIAN (Mejorado + Efecto Mirar a la Cámara)
+    // DIBUJAR A DEMIAN (Estilizado)
     function drawBoy(x, y, showFlowers = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -206,25 +235,20 @@
       // Cabello castaño oscuro
       drawPixelRect(x + 2, y, 12, 6, '#211510');
 
-      // Piel Rostro
+      // Rostro
       drawPixelRect(x + 2, y + 5, 12, 11, '#f1c27d');
 
       if (lookCam) {
-        // GIRO DE CABEZA/OJOS HACIA LA CÁMARA (Arriba Izquierda)
-        drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff'); // Ojo izq
-        drawPixelRect(x + 1, y + 6, 2, 2, '#111116');
-        drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff'); // Ojo der
-        drawPixelRect(x + 6, y + 6, 2, 2, '#111116');
-
-        // Barba perfilada a la izq
+        // Mirada hacia la cámara (Arriba Izquierda)
+        drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff');
+        drawPixelRect(x + 1, y + 6, 2, 2, '#111');
+        drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff');
+        drawPixelRect(x + 6, y + 6, 2, 2, '#111');
         drawPixelRect(x + 1, y + 13, 11, 3, '#4a3322');
-        drawPixelRect(x + 3, y + 12, 5, 1, '#4a3322');
       } else {
-        // Mirada frontal/derecha
+        // Mirada normal
         drawPixelRect(x + 4, y + 8, 2, 3, '#111');
         drawPixelRect(x + 9, y + 8, 2, 3, '#111');
-
-        // Barba
         drawPixelRect(x + 2, y + 13, 12, 3, '#4a3322');
         drawPixelRect(x + 5, y + 12, 6, 1, '#4a3322');
       }
@@ -233,7 +257,7 @@
       drawPixelRect(x, y + 16, 16, 17, '#111116');
       drawPixelRect(x + 3, y + 19, 10, 9, '#ff3344');
 
-      // Brazos y Objetos
+      // Brazos
       if (pose === 'hug') {
         drawPixelRect(x - 8, y + 17, 10, 6, '#f1c27d');
       } else if (showFlowers) {
@@ -245,7 +269,6 @@
         drawPixelRect(fx, fy - 6, 10, 12, '#ffb86c');
         drawPixelRect(fx + 3, fy - 1, 5, 5, '#ff3344');
       } else if (pose === 'point') {
-        // Señala hacia la cámara arriba
         drawPixelRect(x - 12, y + 10, 14, 4, '#f1c27d');
         drawPixelRect(x + 16, y + 16, 5, 12, '#f1c27d');
       } else {
@@ -253,48 +276,45 @@
         drawPixelRect(x + 16, y + 16, 5, 15, '#f1c27d');
       }
 
-      // Pantalones
+      // Pantalones y Tenis
       drawPixelRect(x + 1, y + 33, 14, 18, '#181920');
       drawPixelRect(x + 1, y + 34, 2, 15, '#ffffff');
       drawPixelRect(x, y + 51, 6, 5, '#282a36');
       drawPixelRect(x + 10, y + 51, 6, 5, '#282a36');
     }
 
-    // DIBUJAR A LA CHICA (Diseño Bonito + Efecto Mirar a la Cámara)
+    // DIBUJAR A LA CHICA (Estilizada y Bonita)
     function drawGirl(x, y, heartEyes = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
       // Cabello abundante largo
       drawPixelRect(x - 5, y - 3, 24, 32, '#08090d');
 
-      // Mechas rojas vibrantes en degradado
+      // Mechas rojas en degradado
       drawPixelRect(x, y - 2, 14, 6, '#ff2244');
       drawPixelRect(x - 4, y + 3, 6, 22, '#ff2244');
       drawPixelRect(x + 12, y + 5, 5, 20, '#ff2244');
 
-      // Rostro
+      // Rostro y Rubor
       drawPixelRect(x + 2, y + 5, 12, 10, '#ffe0bd');
-      // Rubor
       drawPixelRect(x + 2, y + 11, 3, 2, '#ff88a0');
       drawPixelRect(x + 11, y + 11, 3, 2, '#ff88a0');
 
       if (lookCam) {
-        // LENTES Y OJOS MIRANDO HACIA LA CÁMARA (ARRIBA A LA IZQUIERDA)
-        drawPixelRect(x, y + 4, 13, 5, '#0d0d12'); // Marco inclinado
-        drawPixelRect(x - 2, y + 2, 4, 3, '#0d0d12');  // Punta cat-eye
-        drawPixelRect(x + 1, y + 5, 4, 3, '#ffffff');  // Cristal izq mirando arriba
-        drawPixelRect(x + 7, y + 5, 4, 3, '#ffffff');  // Cristal der
-        drawPixelRect(x + 1, y + 5, 2, 2, '#111');     // Pupila dirigida a la cámara
+        // Mirada directa a la cámara de seguridad
+        drawPixelRect(x, y + 4, 13, 5, '#0d0d12');
+        drawPixelRect(x - 2, y + 2, 4, 3, '#0d0d12');
+        drawPixelRect(x + 1, y + 5, 4, 3, '#ffffff');
+        drawPixelRect(x + 7, y + 5, 4, 3, '#ffffff');
+        drawPixelRect(x + 1, y + 5, 2, 2, '#111');
         drawPixelRect(x + 7, y + 5, 2, 2, '#111');
       } else if (heartEyes) {
-        // Lentes con ojos de corazones
         drawPixelRect(x + 1, y + 5, 14, 5, '#0d0d12');
         drawPixelRect(x + 2, y + 5, 5, 5, '#ff3366');
         drawPixelRect(x + 9, y + 5, 5, 5, '#ff3366');
         drawPixelRect(x + 3, y + 5, 3, 2, '#ff79c6');
         drawPixelRect(x + 10, y + 5, 3, 2, '#ff79c6');
       } else {
-        // Lentes Cat-Eye normales mirada frontal
         drawPixelRect(x + 1, y + 5, 14, 5, '#0d0d12');
         drawPixelRect(x - 1, y + 3, 4, 3, '#0d0d12');
         drawPixelRect(x + 13, y + 3, 4, 3, '#0d0d12');
@@ -305,11 +325,11 @@
       // Labios
       drawPixelRect(x + 5, y + 12, 5, 2, '#ff1133');
 
-      // Camiseta gráfica
+      // Camiseta
       drawPixelRect(x + 1, y + 15, 14, 16, '#181924');
       drawPixelRect(x + 4, y + 18, 8, 8, '#ff5555');
 
-      // Poses de brazos
+      // Brazos
       if (pose === 'excited') {
         drawPixelRect(x - 5, y + 8, 5, 10, '#ffe0bd');
         drawPixelRect(x + 14, y + 8, 5, 10, '#ffe0bd');
@@ -378,12 +398,12 @@
       drawBackground();
 
       if (animState === 0) {
-        // Inicio juntos frente al carro
+        // Inicio
         drawGirl(girlX, 134, false, 'normal');
         drawBoy(boyX, 134, false, 'normal');
       } 
       else if (animState === 1) {
-        // 1. Demian le señala la cámara
+        // 1. Demian señala la cámara
         timer++;
         drawGirl(girlX, 134, false, 'normal');
         drawBoy(boyX, 134, false, 'point');
@@ -395,7 +415,7 @@
         }
       } 
       else if (animState === 2) {
-        // 2. ¡AMBOS VOLTEAN DIRECTO A LA CÁMARA!
+        // 2. ¡Ambos voltean a ver la cámara de seguridad!
         timer++;
         drawGirl(girlX, 134, false, 'look_cam');
         drawBoy(boyX, 134, false, 'look_cam');
@@ -406,8 +426,8 @@
         }
       } 
       else if (animState === 3) {
-        // 3. Demian va a la puerta trasera del auto (que está justo detrás)
-        if (boyX < 232) {
+        // 3. Demian camina unos pasos a la PUERTA TRASERA (Derecha del auto)
+        if (boyX < 240) {
           boyX += 1.2;
         } else {
           animState = 4;
@@ -417,7 +437,7 @@
         drawBoy(boyX, 134, false, 'normal');
       } 
       else if (animState === 4) {
-        // 4. Abre la puerta trasera del auto y saca las flores
+        // 4. Abre la puerta trasera (a la derecha) y saca el ramo
         timer++;
         doorOpen = true;
         drawGirl(girlX, 134, false, 'normal');
@@ -428,8 +448,8 @@
         }
       } 
       else if (animState === 5) {
-        // 5. Vuelve con ella y le entrega el ramo
-        if (boyX > 212) {
+        // 5. Regresa con ella
+        if (boyX > 210) {
           boyX -= 1.2;
         } else {
           animState = 6;
@@ -439,7 +459,7 @@
         drawBoy(boyX, 134, true, 'normal');
       } 
       else if (animState === 6) {
-        // 6. Ella reacciona con emoción "¡DEMIAN!" y ojos de corazón
+        // 6. Ella reacciona "¡DEMIAN!"
         timer++;
         drawGirl(girlX, 134, true, 'excited');
         drawBoy(boyX, 134, true, 'normal');
@@ -452,7 +472,7 @@
         }
       } 
       else if (animState === 7) {
-        // 7. ¡BESO Y CORAZONES!
+        // 7. Beso y corazones
         drawGirl(girlX, 134, true, 'hug');
         drawBoy(boyX, 134, true, 'hug');
 
@@ -479,7 +499,7 @@
     function resetAnimation() {
       animState = 0;
       girlX = 175;
-      boyX = 215;
+      boyX = 210;
       doorOpen = false;
       timer = 0;
       particles = [];
