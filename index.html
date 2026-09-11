@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Escena 8-Bits - Demian y Ella</title>
+  <title>Escena 8-Bits - Demian y Magi</title>
   <style>
     body {
       background-color: #050608;
@@ -90,16 +90,6 @@
 
     let frame = 0;
     let animState = 0; 
-    /*
-      0: Inicio parados frente al auto
-      1: "¡Mira, una cámara de seguridad!" (Demian señala)
-      2: Ambos VOLTEAN a la cámara de seguridad
-      3: Demian va a la puerta trasera (a la derecha del auto)
-      4: Abre la puerta trasera y saca el ramo
-      5: Vuelve con ella y le entrega el ramo
-      6: Ella reacciona ("¡DEMIAN!") emocionada
-      7: Beso + Corazones
-    */
 
     let timer = 0;
     let particles = [];
@@ -114,7 +104,7 @@
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // NOCHE DETALLADA (Cielo, nubes pixel, casas secundarias, luz urbana)
+    // NOCHE DETALLADA
     function drawBackground() {
       // Degradado del Cielo Nocturno
       drawPixelRect(0, 0, 480, 80, '#060712');
@@ -146,26 +136,22 @@
         drawPixelRect(cx + 10, cy - 4, 30, 12, 'rgba(40, 50, 80, 0.4)');
       });
 
-      // --- CASITAS AL FONDO (Siluetas distantes) ---
-      // Casa fondo 1
+      // --- CASITAS AL FONDO ---
       drawPixelRect(130, 110, 45, 80, '#131625');
-      drawPixelRect(138, 125, 10, 12, '#ffe375'); // Ventana encendida
-      drawPixelRect(155, 145, 10, 12, '#1e2338');
+      drawPixelRect(138, 125, 10, 12, '#ffe375');
 
-      // Casa fondo 2 (edificio pequeño)
       drawPixelRect(280, 100, 55, 90, '#101322');
       drawPixelRect(290, 115, 12, 14, '#ffb86c');
       drawPixelRect(312, 115, 12, 14, '#1a1f33');
       drawPixelRect(290, 140, 12, 14, '#ffb86c');
 
-      // Casa fondo 3
       drawPixelRect(380, 118, 60, 72, '#141829');
       drawPixelRect(395, 130, 14, 18, '#ffe375');
 
       // --- CASA PRINCIPAL IZQUIERDA CON CÁMARA ---
       drawPixelRect(0, 40, 130, 150, '#1c1f2e');
       drawPixelRect(0, 30, 140, 10, '#121420');
-      drawPixelRect(0, 22, 135, 8, '#ff3344'); // Moldura roja
+      drawPixelRect(0, 22, 135, 8, '#ff3344');
 
       // Ventana principal cálida
       drawPixelRect(25, 65, 40, 50, '#f1fa8c');
@@ -177,15 +163,15 @@
       drawPixelRect(85, 120, 35, 70, '#0d0e17');
       drawPixelRect(112, 155, 3, 4, '#ffb86c');
 
-      // CÁMARA DE SEGURIDAD (Apuntando a la pareja)
+      // CÁMARA DE SEGURIDAD
       drawPixelRect(118, 48, 12, 4, '#6272a4');
       drawPixelRect(128, 50, 16, 9, '#f8f8f2');
       drawPixelRect(142, 53, 5, 5, '#111116');
       if (Math.floor(frame / 15) % 2 === 0) {
-        drawPixelRect(138, 51, 3, 3, '#ff3344'); // Luz roja rec
+        drawPixelRect(138, 51, 3, 3, '#ff3344');
       }
 
-      // --- CARRO NEGRO (Volteado: Conductor Izq / Puerta Trasera Der, Justo Detrás) ---
+      // --- CARRO NEGRO (Conductor Izq / Puerta Trasera Der, Justo Detrás) ---
       let carX = 175; 
       let carY = 142;
 
@@ -194,19 +180,20 @@
 
       // Carrocería Negra
       drawPixelRect(carX, carY + 10, 105, 20, '#101117'); 
-      drawPixelRect(carX + 25, carY, 65, 14, '#191b24'); // Techo
-      // Ventanas (Conductor Izquierda, Trasera Derecha)
-      drawPixelRect(carX + 31, carY + 2, 26, 10, '#3d4052'); // Ventana Conductor (Izq)
-      drawPixelRect(carX + 61, carY + 2, 22, 10, '#3d4052'); // Ventana Trasera (Der)
+      drawPixelRect(carX + 25, carY, 65, 14, '#191b24');
+      
+      // Ventanas
+      drawPixelRect(carX + 31, carY + 2, 26, 10, '#3d4052');
+      drawPixelRect(carX + 61, carY + 2, 22, 10, '#3d4052');
 
       // Faros
-      drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff2233');   // Luz trasera (Izquierda)
-      drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0'); // Faro delantero (Derecha)
+      drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff2233');   
+      drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0'); 
 
       // PUERTA TRASERA ABIERTA (Lado Derecho del auto)
       if (doorOpen) {
-        drawPixelRect(carX + 61, carY + 2, 8, 26, '#050508'); // Apertura
-        drawPixelRect(carX + 67, carY + 4, 8, 24, '#242735'); // Puerta abierta
+        drawPixelRect(carX + 61, carY + 2, 8, 26, '#050508'); 
+        drawPixelRect(carX + 67, carY + 4, 8, 24, '#242735'); 
       }
 
       // Llantas
@@ -223,7 +210,7 @@
       }
     }
 
-    // DIBUJAR A DEMIAN (Estilizado)
+    // DIBUJAR A DEMIAN
     function drawBoy(x, y, showFlowers = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -239,14 +226,12 @@
       drawPixelRect(x + 2, y + 5, 12, 11, '#f1c27d');
 
       if (lookCam) {
-        // Mirada hacia la cámara (Arriba Izquierda)
         drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 1, y + 6, 2, 2, '#111');
         drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 6, y + 6, 2, 2, '#111');
         drawPixelRect(x + 1, y + 13, 11, 3, '#4a3322');
       } else {
-        // Mirada normal
         drawPixelRect(x + 4, y + 8, 2, 3, '#111');
         drawPixelRect(x + 9, y + 8, 2, 3, '#111');
         drawPixelRect(x + 2, y + 13, 12, 3, '#4a3322');
@@ -283,7 +268,7 @@
       drawPixelRect(x + 10, y + 51, 6, 5, '#282a36');
     }
 
-    // DIBUJAR A LA CHICA (Estilizada y Bonita)
+    // DIBUJAR A MAGI
     function drawGirl(x, y, heartEyes = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -301,7 +286,6 @@
       drawPixelRect(x + 11, y + 11, 3, 2, '#ff88a0');
 
       if (lookCam) {
-        // Mirada directa a la cámara de seguridad
         drawPixelRect(x, y + 4, 13, 5, '#0d0d12');
         drawPixelRect(x - 2, y + 2, 4, 3, '#0d0d12');
         drawPixelRect(x + 1, y + 5, 4, 3, '#ffffff');
@@ -398,12 +382,10 @@
       drawBackground();
 
       if (animState === 0) {
-        // Inicio
         drawGirl(girlX, 134, false, 'normal');
         drawBoy(boyX, 134, false, 'normal');
       } 
       else if (animState === 1) {
-        // 1. Demian señala la cámara
         timer++;
         drawGirl(girlX, 134, false, 'normal');
         drawBoy(boyX, 134, false, 'point');
@@ -415,7 +397,6 @@
         }
       } 
       else if (animState === 2) {
-        // 2. ¡Ambos voltean a ver la cámara de seguridad!
         timer++;
         drawGirl(girlX, 134, false, 'look_cam');
         drawBoy(boyX, 134, false, 'look_cam');
@@ -426,7 +407,6 @@
         }
       } 
       else if (animState === 3) {
-        // 3. Demian camina unos pasos a la PUERTA TRASERA (Derecha del auto)
         if (boyX < 240) {
           boyX += 1.2;
         } else {
@@ -437,7 +417,6 @@
         drawBoy(boyX, 134, false, 'normal');
       } 
       else if (animState === 4) {
-        // 4. Abre la puerta trasera (a la derecha) y saca el ramo
         timer++;
         doorOpen = true;
         drawGirl(girlX, 134, false, 'normal');
@@ -448,7 +427,6 @@
         }
       } 
       else if (animState === 5) {
-        // 5. Regresa con ella
         if (boyX > 210) {
           boyX -= 1.2;
         } else {
@@ -459,11 +437,10 @@
         drawBoy(boyX, 134, true, 'normal');
       } 
       else if (animState === 6) {
-        // 6. Ella reacciona "¡DEMIAN!"
         timer++;
         drawGirl(girlX, 134, true, 'excited');
         drawBoy(boyX, 134, true, 'normal');
-        drawSubtitle("¡DEMIAN! 😍", "ELLA:");
+        drawSubtitle("¡DEMIAN! 😍", "MAGI:"); // <--- Nombre corregido aquí
 
         if (timer > 85) {
           animState = 7;
@@ -472,7 +449,6 @@
         }
       } 
       else if (animState === 7) {
-        // 7. Beso y corazones
         drawGirl(girlX, 134, true, 'hug');
         drawBoy(boyX, 134, true, 'hug');
 
