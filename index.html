@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Para Ti 💕</title>
+<title>D & M</title>
 <style>
   :root{
     --pink-deep:#ff4f8b;
@@ -27,7 +27,7 @@
     position:absolute;
     top:0;
     bottom:0;
-    width:90px;
+    width:170px;
     z-index:1;
     overflow:hidden;
     pointer-events:none;
@@ -85,7 +85,7 @@
   .main-content{
     position:relative;
     z-index:5;
-    width:min(560px, calc(100% - 200px));
+    width:min(500px, calc(100% - 380px));
     padding:26px 10px 50px;
     display:flex;
     flex-direction:column;
@@ -284,20 +284,21 @@
     justify-content:center;
   }
   .music-btn:hover{ background:rgba(255,79,139,.8); }
+  .music-btn.pulsing{ animation:pulse 1.4s infinite; }
 
   @media (max-width:560px){
-    .side-strip{ width:46px; }
-    .main-content{ width:calc(100% - 100px); }
+    .side-strip{ width:56px; }
+    .main-content{ width:calc(100% - 130px); }
   }
 </style>
 </head>
 <body>
 
-<button class="music-btn" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio">🎵</button>
+<button class="music-btn pulsing" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio (toca para activar el sonido)">🎵</button>
 <div style="position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;">
   <iframe id="bgMusic"
     width="2" height="2"
-    src="https://www.youtube.com/embed/Y3UH_9ZV1-A?enablejsapi=1&loop=1&playlist=Y3UH_9ZV1-A"
+    src="https://www.youtube.com/embed/Y3UH_9ZV1-A?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=Y3UH_9ZV1-A"
     frameborder="0"
     allow="autoplay; encrypted-media">
   </iframe>
@@ -378,24 +379,32 @@
 <script>
 /* ================================================================
    MÚSICA DE FONDO — "in the pool" · Kensuke Ushio
+   (autoplay silenciado al cargar; se activa el sonido con el primer toque)
    ================================================================ */
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
-let musicPlaying = false;
+let muted = true;
 
 function ytCommand(func){
   bgMusic.contentWindow.postMessage(JSON.stringify({event:'command', func:func, args:[]}), '*');
 }
 
+function setMuted(m){
+  muted = m;
+  ytCommand(m ? 'mute' : 'unMute');
+  ytCommand('playVideo');
+  musicToggle.textContent = m ? '🎵' : '🔊';
+  if(!m) musicToggle.classList.remove('pulsing');
+}
+
+function unmuteOnFirstInteraction(){
+  setMuted(false);
+}
+document.addEventListener('click', unmuteOnFirstInteraction, {once:true});
+document.addEventListener('touchstart', unmuteOnFirstInteraction, {once:true});
+
 musicToggle.addEventListener('click', () => {
-  if(!musicPlaying){
-    ytCommand('playVideo');
-    musicToggle.textContent = '🔊';
-  } else {
-    ytCommand('pauseVideo');
-    musicToggle.textContent = '🎵';
-  }
-  musicPlaying = !musicPlaying;
+  setMuted(!muted);
 });
 
 /* ================================================================
