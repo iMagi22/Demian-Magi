@@ -28,7 +28,6 @@
     position:relative;
     flex:1 1 0;
     min-width:70px;
-    max-width:320px;
     z-index:1;
     overflow:hidden;
     pointer-events:none;
@@ -295,7 +294,7 @@
 <body>
 
 <button class="music-btn pulsing" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio (toca para activar el sonido)">🎵</button>
-<audio id="bgMusic" loop muted playsinline style="display:none">
+<audio id="bgMusic" loop muted autoplay playsinline style="display:none">
   <source src="musica.mp3" type="audio/mpeg">
 </audio>
 
@@ -389,6 +388,8 @@ function setMuted(m){
 }
 
 window.addEventListener('load', () => { setMuted(true); });
+document.addEventListener('DOMContentLoaded', () => { setMuted(true); });
+bgMusic.addEventListener('canplaythrough', () => { bgMusic.play().catch(()=>{}); }, {once:true});
 
 function unmuteOnFirstInteraction(){
   setMuted(false);
@@ -491,24 +492,12 @@ function drawSideLandscape(canvas){
   }
   ctx.globalAlpha = 1;
 
-  // nebulosa/aurora sutil arriba
-  ctx.fillStyle = 'rgba(184,90,170,.06)';
-  for(let x=0;x<w;x++){
-    const ny = h*0.30 + Math.sin(x*0.06)*10;
-    ctx.fillRect(x, Math.round(ny), 1, 22);
-  }
-
-  // segunda nebulosa más abajo, para que el paisaje se sienta lleno
-  ctx.fillStyle = 'rgba(120,80,200,.07)';
-  for(let x=0;x<w;x++){
-    const ny2 = h*0.58 + Math.cos(x*0.05)*14;
-    ctx.fillRect(x, Math.round(ny2), 1, 30);
-  }
-  ctx.fillStyle = 'rgba(200,110,160,.05)';
-  for(let x=0;x<w;x++){
-    const ny3 = h*0.74 + Math.sin(x*0.04+1.5)*12;
-    ctx.fillRect(x, Math.round(ny3), 1, 24);
-  }
+  // nebulosa/aurora sutil (una sola, difuminada, sin bandas duras)
+  const nebula = ctx.createRadialGradient(w*0.5, h*0.42, w*0.2, w*0.5, h*0.42, w*1.6);
+  nebula.addColorStop(0, 'rgba(184,110,190,.10)');
+  nebula.addColorStop(1, 'rgba(184,110,190,0)');
+  ctx.fillStyle = nebula;
+  ctx.fillRect(0,0,w,h);
 
   // colinas silueta
   ctx.fillStyle = '#160b28';
