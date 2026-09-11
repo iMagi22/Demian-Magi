@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Escena 8-Bits - Romántica Noche</title>
+  <style>
+    body {
+      background-color: #0d0e15;
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #ff79c6;
+      text-shadow: 2px 2px #000;
+      letter-spacing: 1px;
+    }
+
+    .game-container {
+      position: relative;
+      border: 4px solid #fff;
+      box-shadow: 0 0 20px rgba(255, 121, 198, 0.4);
+      background: #000;
+    }
+
+    canvas {
+      display: block;
+      image-rendering: pixelated; /* Mantiene los píxeles nítidos sin desenfoque */
+    }
+
+    .controls {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      background: #bd93f9;
+      border: 2px solid #fff;
+      color: #000;
+      padding: 8px 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: bold;
+      cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0px #000;
+    }
+
+    button:hover {
+      background: #ff79c6;
+      color: #fff;
+    }
+
+    button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0px #000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>[ 8-BIT ROMANTIC CUTSCENE ]</h1>
+
+  <div class="game-container">
+    <canvas id="gameCanvas" width="256" height="224"></canvas>
+  </div>
+
+  <div class="controls">
+    <button onclick="startAnimation()">▶ Reproducir Animación</button>
+    <button onclick="resetAnimation()">↺ Reiniciar Scene</button>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Escalar la vista sin perder el estilo Pixel Art (256x224 escalado x3)
+    canvas.style.width = (canvas.width * 3) + 'px';
+    canvas.style.height = (canvas.height * 3) + 'px';
+
+    let frame = 0;
+    let animState = 0; // 0: Inicio, 1: Acercándose, 2: Flores + Ojos Corazón, 3: Beso + Corazones
+    let timer = 0;
+    let particles = [];
+
+    // Posiciones de los personajes
+    let boyX = 70;
+    let girlX = 170;
+
+    function drawPixelRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(Math.round(x), Math.round(y), w, h);
+    }
+
+    // Fondo: Noche, Ciudad, Faro de Luz, Carro Negro
+    function drawBackground() {
+      // Cielo nocturno
+      drawPixelRect(0, 0, 256, 150, '#0a0a1a');
+
+      // Estrellas titilantes
+      ctx.fillStyle = '#ffffff';
+      let starCoords = [[20, 15], [50, 30], [90, 10], [140, 25], [190, 12], [230, 35]];
+      starCoords.forEach(([sx, sy], i) => {
+        if ((frame + i * 10) % 40 < 25) {
+          drawPixelRect(sx, sy, 2, 2, '#fff');
+        }
+      });
+
+      // Luna de píxeles
+      drawPixelRect(210, 15, 16, 16, '#ffffcc');
+      drawPixelRect(208, 17, 20, 12, '#ffffcc');
+
+      // Silueta de Ciudad
+      drawPixelRect(10, 80, 25, 70, '#121324');
+      drawPixelRect(40, 60, 30, 90, '#191a33');
+      drawPixelRect(80, 90, 20, 60, '#121324');
+      drawPixelRect(150, 70, 35, 80, '#191a33');
+      drawPixelRect(190, 85, 25, 65, '#121324');
+
+      // Ventanitas amarillas en la ciudad
+      drawPixelRect(48, 70, 3, 4, '#ffb86c');
+      drawPixelRect(56, 85, 3, 4, '#ffb86c');
+      drawPixelRect(160, 80, 3, 4, '#ffb86c');
+
+      // Calle / Asfalto
+      drawPixelRect(0, 150, 256, 74, '#282a36');
+      drawPixelRect(0, 150, 256, 4, '#44475a');
+
+      // Farola
+      drawPixelRect(20, 90, 4, 60, '#6272a4');
+      drawPixelRect(16, 86, 12, 4, '#6272a4');
+      drawPixelRect(18, 88, 8, 4, '#f1fa8c'); // Luz
+      // Resplandor farola
+      ctx.fillStyle = 'rgba(241, 250, 140, 0.08)';
+      ctx.beginPath();
+      ctx.moveTo(22, 92);
+      ctx.lineTo(2, 170);
+      ctx.lineTo(60, 170);
+      ctx.fill();
+
+      // Carro Negro
+      let carX = 100;
+      let carY = 130;
+      drawPixelRect(carX, carY + 10, 70, 18, '#111'); // Cuerpo
+      drawPixelRect(carX + 10, carY, 45, 12, '#1a1a1a'); // Techo
+      drawPixelRect(carX + 15, carY + 2, 15, 8, '#6272a4'); // Ventana izq
+      drawPixelRect(carX + 35, carY + 2, 15, 8, '#6272a4'); // Ventana der
+      drawPixelRect(carX + 68, carY + 14, 3, 4, '#ff5555'); // Luz trasera
+      // Ruedas
+      drawPixelRect(carX + 12, carY + 24, 12, 10, '#000');
+      drawPixelRect(carX + 50, carY + 24, 12, 10, '#000');
+      drawPixelRect(carX + 15, carY + 27, 6, 4, '#6272a4');
+      drawPixelRect(carX + 53, carY + 27, 6, 4, '#6272a4');
+    }
+
+    // Dibujar al Chico (Musculoso, audífonos, camiseta negra de gym)
+    function drawBoy(x, y, showFlowers = false, posture = 'normal') {
+      // Cabello
+      drawPixelRect(x + 2, y, 12, 5, '#282a36');
+      // Audífonos
+      drawPixelRect(x, y + 2, 3, 6, '#ff5555');
+      drawPixelRect(x + 13, y + 2, 3, 6, '#ff5555');
+      drawPixelRect(x + 2, y - 1, 12, 2, '#44475a');
+
+      // Cara
+      drawPixelRect(x + 3, y + 4, 10, 8, '#f1c27d');
+      drawPixelRect(x + 5, y + 7, 2, 2, '#000'); // Ojo izq
+      drawPixelRect(x + 9, y + 7, 2, 2, '#000'); // Ojo der
+      drawPixelRect(x + 6, y + 10, 4, 1, '#b06d51'); // Sonrisa
+
+      // Cuerpo musculoso (Camiseta negra)
+      drawPixelRect(x + 1, y + 12, 14, 14, '#191919');
+      drawPixelRect(x + 5, y + 15, 6, 6, '#ff5555'); // Logo / detalle en pecho
+
+      // Brazos
+      if (posture === 'hug') {
+        drawPixelRect(x + 12, y + 13, 8, 4, '#f1c27d');
+      } else {
+        drawPixelRect(x - 3, y + 13, 4, 10, '#f1c27d'); // Brazo izq
+        drawPixelRect(x + 15, y + 13, 4, 10, '#f1c27d'); // Brazo der
+      }
+
+      // Ramos de Flores (si las saca)
+      if (showFlowers) {
+        let fx = x + 14;
+        let fy = y + 12;
+        drawPixelRect(fx, fy + 4, 3, 8, '#50fa7b'); // Tallo
+        drawPixelRect(fx - 4, fy - 2, 10, 8, '#ff79c6'); // Flores rosas
+        drawPixelRect(fx - 2, fy - 4, 6, 8, '#ffb86c'); // Flores amarillas
+        drawPixelRect(fx - 1, fy - 1, 4, 4, '#ff5555'); // Centro
+      }
+
+      // Pantalones holgados negros y tenis
+      drawPixelRect(x + 2, y + 26, 12, 12, '#21222c');
+      drawPixelRect(x + 1, y + 38, 5, 4, '#f8f8f2');
+      drawPixelRect(x + 10, y + 38, 5, 4, '#f8f8f2');
+    }
+
+    // Dibujar a la Chica (Cabello largo negro con mechas rojas, lentes)
+    function drawGirl(x, y, heartEyes = false, posture = 'normal') {
+      // Cabello Largo Negro
+      drawPixelRect(x - 2, y - 2, 18, 22, '#111');
+      // Mechas Rojas en el cabello
+      drawPixelRect(x, y, 4, 14, '#ff5555');
+      drawPixelRect(x + 10, y + 2, 4, 12, '#ff5555');
+
+      // Cara
+      drawPixelRect(x + 3, y + 4, 10, 8, '#ffdbac');
+
+      // Lentes negros
+      drawPixelRect(x + 3, y + 5, 10, 4, '#000');
+      drawPixelRect(x + 4, y + 6, 3, 2, '#fff');
+      drawPixelRect(x + 9, y + 6, 3, 2, '#fff');
+
+      // Ojos de Corazón cuando está emocionada
+      if (heartEyes) {
+        drawPixelRect(x + 3, y + 5, 4, 4, '#ff5555');
+        drawPixelRect(x + 9, y + 5, 4, 4, '#ff5555');
+        // Forma de corazón simple
+        drawPixelRect(x + 4, y + 5, 2, 1, '#ff79c6');
+        drawPixelRect(x + 10, y + 5, 2, 1, '#ff79c6');
+      }
+
+      drawPixelRect(x + 6, y + 10, 4, 1, '#d14949'); // Labios rojos
+
+      // Cuerpo (Camiseta gráfica oscura)
+      drawPixelRect(x + 3, y + 12, 10, 12, '#282a36');
+      drawPixelRect(x + 5, y + 14, 6, 6, '#ff79c6'); // Impresión en camiseta
+
+      // Brazos (Pose de emoción o abrazo)
+      if (posture === 'excited') {
+        drawPixelRect(x - 3, y + 8, 4, 8, '#ffdbac'); // Manos arriba
+        drawPixelRect(x + 13, y + 8, 4, 8, '#ffdbac');
+      } else if (posture === 'hug') {
+        drawPixelRect(x - 4, y + 13, 8, 4, '#ffdbac');
+      } else {
+        drawPixelRect(x + 1, y + 12, 3, 10, '#ffdbac');
+        drawPixelRect(x + 12, y + 12, 3, 10, '#ffdbac');
+      }
+
+      // Pantalón y calzado
+      drawPixelRect(x + 4, y + 24, 8, 14, '#44475a');
+      drawPixelRect(x + 3, y + 38, 4, 4, '#111');
+      drawPixelRect(x + 9, y + 38, 4, 4, '#111');
+    }
+
+    // Efecto de corazones flotando al besarse
+    function createHeartParticle(x, y) {
+      particles.push({
+        x: x + (Math.random() * 20 - 10),
+        y: y,
+        vy: - (Math.random() * 1 + 0.5),
+        life: 40,
+        color: Math.random() > 0.5 ? '#ff5555' : '#ff79c6'
+      });
+    }
+
+    function updateAndDrawParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        let p = particles[i];
+        p.y += p.vy;
+        p.life--;
+
+        // Dibujar mini corazón de píxeles
+        drawPixelRect(p.x, p.y, 6, 6, p.color);
+        drawPixelRect(p.x + 1, p.y - 1, 4, 1, p.color);
+        drawPixelRect(p.x + 2, p.y + 6, 2, 1, p.color);
+
+        if (p.life <= 0) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    // Bocadillo de texto tipo RPG 8-bits
+    function drawTextBox(text) {
+      drawPixelRect(20, 175, 216, 40, '#000');
+      drawPixelRect(22, 177, 212, 36, '#fff');
+      drawPixelRect(24, 179, 208, 32, '#000');
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px monospace';
+      ctx.fillText(text, 32, 198);
+    }
+
+    // Bucle principal de animación (Game Loop)
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+
+      drawBackground();
+
+      // Control de estados de la historia
+      if (animState === 0) {
+        // Estado 0: Parados frente al coche
+        drawBoy(boyX, 126, false, 'normal');
+        drawGirl(girlX, 126, false, 'normal');
+        drawTextBox("Noche especial cerca del coche...");
+      } 
+      else if (animState === 1) {
+        // Estado 1: Se acercan
+        if (boyX < 105) boyX += 0.5;
+        if (girlX > 135) girlX -= 0.5;
+
+        drawBoy(boyX, 126, false, 'normal');
+        drawGirl(girlX, 126, false, 'normal');
+        drawTextBox("Acercándose...");
+
+        if (boyX >= 105 && girlX <= 135) {
+          animState = 2;
+          timer = 0;
+        }
+      } 
+      else if (animState === 2) {
+        // Estado 2: ÉL saca las flores, ELLA pone ojos de corazón y emoción
+        timer++;
+        drawBoy(boyX, 126, true, 'normal');
+        drawGirl(girlX, 126, true, 'excited');
+        drawTextBox("¡Un detalle con flores! 😍");
+
+        if (timer > 90) {
+          animState = 3;
+          // Se juntan para el beso
+          boyX = 114;
+          girlX = 122;
+        }
+      } 
+      else if (animState === 3) {
+        // Estado 3: ¡SE DAN UN BESO! + Corazones animando
+        drawBoy(boyX, 126, true, 'hug');
+        drawGirl(girlX, 126, true, 'hug');
+
+        // Gran corazón sobre ellos
+        drawPixelRect(123, 112, 10, 10, '#ff5555');
+
+        if (frame % 8 === 0) {
+          createHeartParticle(124, 118);
+        }
+
+        drawTextBox("¡Beso bajo las estrellas! 💖");
+      }
+
+      updateAndDrawParticles();
+      requestAnimationFrame(gameLoop);
+    }
+
+    function startAnimation() {
+      if (animState === 0) {
+        animState = 1;
+      }
+    }
+
+    function resetAnimation() {
+      animState = 0;
+      boyX = 70;
+      girlX = 170;
+      timer = 0;
+      particles = [];
+    }
+
+    // Iniciar bucle del canvas
+    gameLoop();
+  </script>
+</body>
+</html>
