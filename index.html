@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Para Ti 💕</title>
+<title>D & M</title>
 <style>
   :root{
     --pink-deep:#ff4f8b;
@@ -28,7 +28,7 @@
     position:relative;
     flex:1 1 0;
     min-width:70px;
-    max-width:260px;
+    max-width:320px;
     z-index:1;
     overflow:hidden;
     pointer-events:none;
@@ -295,19 +295,14 @@
 <body>
 
 <button class="music-btn pulsing" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio (toca para activar el sonido)">🎵</button>
-<div style="position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;">
-  <iframe id="bgMusic"
-    width="2" height="2"
-    src="https://www.youtube.com/embed/Y3UH_9ZV1-A?enablejsapi=1&autoplay=1&mute=1&loop=1&playlist=Y3UH_9ZV1-A"
-    frameborder="0"
-    allow="autoplay; encrypted-media">
-  </iframe>
-</div>
+<audio id="bgMusic" loop muted playsinline style="display:none">
+  <source src="musica.mp3" type="audio/mpeg">
+</audio>
 
 <div class="page">
 
   <div class="side-strip left">
-    <canvas id="sunsetL" width="40" height="320"></canvas>
+    <canvas id="sunsetL" width="60" height="420"></canvas>
     <div class="stars-overlay" id="starsOverlayL"></div>
     <div class="hearts-col" id="heartsColL"></div>
   </div>
@@ -369,7 +364,7 @@
   </div>
 
   <div class="side-strip right">
-    <canvas id="sunsetR" width="40" height="320"></canvas>
+    <canvas id="sunsetR" width="60" height="420"></canvas>
     <div class="stars-overlay" id="starsOverlayR"></div>
     <div class="hearts-col" id="heartsColR"></div>
   </div>
@@ -378,24 +373,22 @@
 
 <script>
 /* ================================================================
-   MÚSICA DE FONDO — "in the pool" · Kensuke Ushio
+   MÚSICA DE FONDO
    (autoplay silenciado al cargar; se activa el sonido con el primer toque)
    ================================================================ */
 const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 let muted = true;
 
-function ytCommand(func){
-  bgMusic.contentWindow.postMessage(JSON.stringify({event:'command', func:func, args:[]}), '*');
-}
-
 function setMuted(m){
   muted = m;
-  ytCommand(m ? 'mute' : 'unMute');
-  ytCommand('playVideo');
+  bgMusic.muted = m;
+  bgMusic.play().catch(()=>{ /* el navegador puede seguir bloqueándolo hasta que haya interacción */ });
   musicToggle.textContent = m ? '🎵' : '🔊';
   if(!m) musicToggle.classList.remove('pulsing');
 }
+
+window.addEventListener('load', () => { setMuted(true); });
 
 function unmuteOnFirstInteraction(){
   setMuted(false);
@@ -477,12 +470,12 @@ function drawSideLandscape(canvas){
   ctx.arc(mx,my,mr,0,Math.PI*2);
   ctx.fill();
 
-  // estrellas de varios tamaños
+  // estrellas de varios tamaños, repartidas en TODA la altura
   ctx.fillStyle = '#ffffff';
-  for(let i=0;i<46;i++){
+  for(let i=0;i<95;i++){
     const sx = Math.floor(Math.random()*w);
-    const sy = Math.floor(Math.random()*h*0.85);
-    const big = Math.random() < 0.18;
+    const sy = Math.floor(Math.random()*h*0.94);
+    const big = Math.random() < 0.15;
     if(big){
       ctx.globalAlpha = 0.9;
       ctx.fillRect(sx, sy, 2, 2);
@@ -498,11 +491,23 @@ function drawSideLandscape(canvas){
   }
   ctx.globalAlpha = 1;
 
-  // nebulosa/aurora sutil
+  // nebulosa/aurora sutil arriba
   ctx.fillStyle = 'rgba(184,90,170,.06)';
   for(let x=0;x<w;x++){
     const ny = h*0.30 + Math.sin(x*0.06)*10;
     ctx.fillRect(x, Math.round(ny), 1, 22);
+  }
+
+  // segunda nebulosa más abajo, para que el paisaje se sienta lleno
+  ctx.fillStyle = 'rgba(120,80,200,.07)';
+  for(let x=0;x<w;x++){
+    const ny2 = h*0.58 + Math.cos(x*0.05)*14;
+    ctx.fillRect(x, Math.round(ny2), 1, 30);
+  }
+  ctx.fillStyle = 'rgba(200,110,160,.05)';
+  for(let x=0;x<w;x++){
+    const ny3 = h*0.74 + Math.sin(x*0.04+1.5)*12;
+    ctx.fillRect(x, Math.round(ny3), 1, 24);
   }
 
   // colinas silueta
@@ -528,15 +533,15 @@ function spawnTwinkleStars(container, count){
     s.style.width = size+'px';
     s.style.height = size+'px';
     s.style.left = (Math.random()*94+3)+'%';
-    s.style.top = (Math.random()*72+2)+'%';
+    s.style.top = (Math.random()*88+2)+'%';
     s.style.boxShadow = '0 0 '+(size*2)+'px rgba(255,255,255,.9)';
     s.style.animationDuration = (1.6 + Math.random()*2.6)+'s';
     s.style.animationDelay = (Math.random()*3)+'s';
     container.appendChild(s);
   }
 }
-spawnTwinkleStars(document.getElementById('starsOverlayL'), 16);
-spawnTwinkleStars(document.getElementById('starsOverlayR'), 16);
+spawnTwinkleStars(document.getElementById('starsOverlayL'), 30);
+spawnTwinkleStars(document.getElementById('starsOverlayR'), 30);
 
 function spawnSideHearts(container, stripWidth){
   function spawn(){
