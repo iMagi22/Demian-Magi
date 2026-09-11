@@ -69,7 +69,7 @@
 </head>
 <body>
 
-  <h1>[ LA RATA DE CAMPO - EDICIÓN EXTENDIDA ]</h1>
+  <h1>[ LA RATA DE CAMPO - EDICIÓN MÁS LENTA ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
@@ -98,7 +98,6 @@
     let m1X = -30;
     let m2X = -60;
     let mY = 172;
-    let showCheese = false;
     let cheeseX = 520;
 
     function drawPixelRect(x, y, w, h, color) {
@@ -111,7 +110,7 @@
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // FONDO: CAMPO NOCTURNO PACÍFICO Y EXTENSO
+    // FONDO: CAMPO NOCTURNO
     function drawBackground() {
       // Cielo Nocturno Fijo
       drawFixedPixelRect(0, 0, 480, 100, '#090c1a');
@@ -144,7 +143,7 @@
       drawFixedPixelRect(0, 180, 480, 90, '#17331c');
       drawFixedPixelRect(0, 180, 480, 6, '#286338');
 
-      // Briznas de Pasto Animadas por la brisa
+      // Briznas de Pasto Animadas
       for (let i = -50; i < 900; i += 18) {
         let wind = Math.sin((frame + i) * 0.04) * 2;
         drawPixelRect(i, 174, 3, 8, '#50fa7b');
@@ -162,8 +161,8 @@
     // DIBUJAR RATA DE CAMPO
     function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
       let isMoving = (pose === 'walk');
-      let legOffset = isMoving ? Math.sin(frame * 0.25) * 2.5 : 0;
-      let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.15)) * 4 : 0;
+      let legOffset = isMoving ? Math.sin(frame * 0.2) * 2.5 : 0;
+      let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.12)) * 4 : 0;
       let actualY = y - happyJump;
 
       let bodyColor = isGirl ? '#a88b80' : '#8b8c8e';
@@ -173,12 +172,12 @@
       drawPixelRect(x, actualY, 16, 10, bodyColor);
       drawPixelRect(x + 2, actualY - 2, 12, 3, backColor);
 
-      // Orejas de campo
+      // Orejas
       let earX = isRight ? x + 2 : x + 10;
       drawPixelRect(earX, actualY - 6, 5, 5, '#ffb86c');
       drawPixelRect(earX + 1, actualY - 5, 3, 3, '#ff9999');
 
-      // Detalle de Ella: Flor en la oreja
+      // Flor en la oreja
       if (isGirl) {
         drawPixelRect(earX - 2, actualY - 6, 3, 3, '#ff79c6');
       }
@@ -212,20 +211,20 @@
       drawPixelRect(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
     }
 
-    // POCA COMIDA: PEDACITO DE QUESO
+    // POCA COMIDA: QUESO
     function drawFood(x, y) {
       drawPixelRect(x, y, 9, 7, '#f1fa8c');
       drawPixelRect(x + 2, y - 2, 5, 3, '#f1fa8c');
       drawPixelRect(x + 2, y + 2, 2, 2, '#ffb86c');
     }
 
-    // PARTÍCULAS DE AMOR
+    // PARTÍCULAS
     function createHeart(x, y) {
       particles.push({
         x: x + (Math.random() * 16 - 8),
         y: y,
-        vy: -0.4,
-        life: 60,
+        vy: -0.3,
+        life: 70,
         color: Math.random() > 0.3 ? '#ff79c6' : '#ff3366'
       });
     }
@@ -243,7 +242,7 @@
       }
     }
 
-    // CAJA DE SUBTÍTULOS
+    // SUBTÍTULOS
     function drawSubtitle(text, speaker = "") {
       drawFixedPixelRect(20, 200, 440, 60, '#000000');
       drawFixedPixelRect(22, 202, 436, 56, '#ffffff');
@@ -264,7 +263,7 @@
       });
     }
 
-    // BUCLE NARRATIVO MUCHO MÁS LARGO Y LENTO
+    // BUCLE NARRATIVO PAUSADO
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
@@ -273,17 +272,16 @@
 
       drawFood(cheeseX, 176);
 
-      // --- HISTORIA PASO A PASO ---
       if (state === 0) {
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
         drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar.");
       }
       else if (state === 1) {
-        // Primera caminata larga
+        // Caminata suave
         if (m1X < 180) {
-          m1X += 0.5;
-          m2X += 0.5;
+          m1X += 0.4;
+          m2X += 0.4;
           drawMouse(m1X, mY, true, false, 'walk');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
@@ -293,21 +291,21 @@
         drawSubtitle("Buscando algo de comer en la inmensidad de la noche...");
       }
       else if (state === 2) {
-        // Pausa conversacional durante la búsqueda
+        // Pausa conversacional (300 frames ≈ 5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
-        drawSubtitle("Llevamos mucho tiempo buscando... La comida no abunda por aquí.", "ÉL:");
+        drawSubtitle("Llevamos mucho tiempo buscando...\nLa comida no abunda por aquí.", "ÉL:");
 
-        if (timer > 160) { state = 3; timer = 0; }
+        if (timer > 300) { state = 3; timer = 0; }
       }
       else if (state === 3) {
-        // Segunda caminata larga con movimiento de cámara
+        // Segunda caminata
         if (m1X < 490) {
-          m1X += 0.5;
-          m2X += 0.5;
-          cameraX += 0.35;
+          m1X += 0.4;
+          m2X += 0.4;
+          cameraX += 0.28;
           drawMouse(m1X, mY, true, false, 'walk');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
@@ -317,29 +315,29 @@
         drawSubtitle("Siguen recorriendo la hierba bajo las estrellas...");
       }
       else if (state === 4) {
-        // Encuentran el queso
+        // Encuentran el queso (300 frames ≈ 5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
         drawSubtitle("¡Mira! Encontré un pedacito de queso...", "ÉL:");
 
-        if (timer > 150) { state = 5; timer = 0; }
+        if (timer > 300) { state = 5; timer = 0; }
       }
       else if (state === 5) {
-        // Gestos de afecto y ceder la comida
+        // Ofrece el queso (350 frames ≈ 6 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
         drawSubtitle("Sé que es muy poco, pero quiero que te lo quedes tú.\nNecesitas comer algo.", "ÉL:");
 
-        if (timer > 170) { state = 6; timer = 0; }
+        if (timer > 350) { state = 6; timer = 0; }
       }
       else if (state === 6) {
-        // Ella camina hacia él
+        // Ella camina
         if (m2X < 475) {
-          m2X += 0.4;
+          m2X += 0.3;
           drawMouse(m1X, mY, true, false, 'normal');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
@@ -349,32 +347,32 @@
         drawSubtitle("Ella se acerca a él dulcemente...");
       }
       else if (state === 7) {
-        // Filosofía de la Rata de Campo (Parte 1)
+        // Filosofía 1 (300 frames ≈ 5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
         drawSubtitle("No me importa que tengamos poca comida...", "ELLA:");
 
-        if (timer > 150) { state = 8; timer = 0; }
+        if (timer > 300) { state = 8; timer = 0; }
       }
       else if (state === 8) {
-        // Filosofía de la Rata de Campo (Parte 2)
+        // Filosofía 2 (380 frames ≈ 6.5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
         drawSubtitle("La rata de campo vive libre aunque tenga poco que comer.\nSin trampas, sin gatos y sin miedo.", "ELLA:");
 
-        if (timer > 180) { state = 9; timer = 0; }
+        if (timer > 380) { state = 9; timer = 0; }
       }
       else if (state === 9) {
-        // Promesa de Amor
+        // Final romántico
         timer++;
         drawMouse(m1X, mY, true, false, 'happy');
         drawMouse(m2X, mY, false, true, 'love');
 
-        if (frame % 8 === 0) {
+        if (frame % 10 === 0) {
           createHeart(m1X + 15, 160);
         }
 
