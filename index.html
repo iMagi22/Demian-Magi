@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rata de Campo - Lectura Ultra Tranquila 8-Bits</title>
+  <title>Rata de Campo - Escena Súper Lenta 8-Bits</title>
   <style>
     body {
       background-color: #050608;
@@ -69,7 +69,7 @@
 </head>
 <body>
 
-  <h1>[ LA RATA DE CAMPO - TIEMPO EXTENDIDO ]</h1>
+  <h1>[ LA RATA DE CAMPO - EDICIÓN PAUSADA ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
@@ -161,7 +161,7 @@
     // DIBUJAR RATA DE CAMPO
     function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
       let isMoving = (pose === 'walk');
-      let legOffset = isMoving ? Math.sin(frame * 0.2) * 2.5 : 0;
+      let legOffset = isMoving ? Math.sin(frame * 0.15) * 2.5 : 0;
       let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.12)) * 4 : 0;
       let actualY = y - happyJump;
 
@@ -263,7 +263,7 @@
       });
     }
 
-    // BUCLE NARRATIVO CON TIEMPOS MUCHO MÁS LARGOS
+    // BUCLE NARRATIVO CON ACERCAMIENTO ULTRA LENTO
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
@@ -278,7 +278,7 @@
         drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar.");
       }
       else if (state === 1) {
-        // Caminata suave inicial
+        // Caminata inicial
         if (m1X < 180) {
           m1X += 0.4;
           m2X += 0.4;
@@ -291,7 +291,7 @@
         drawSubtitle("Buscando algo de comer en la inmensidad de la noche...");
       }
       else if (state === 2) {
-        // Pausa conversacional (400 frames ≈ 6.5 segundos)
+        // Pausa conversacional
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
@@ -315,7 +315,7 @@
         drawSubtitle("Siguen recorriendo la hierba bajo las estrellas...");
       }
       else if (state === 4) {
-        // Encuentran el queso (450 frames ≈ 7.5 segundos)
+        // Encuentran el queso
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
@@ -325,7 +325,7 @@
         if (timer > 450) { state = 5; timer = 0; }
       }
       else if (state === 5) {
-        // Ofrece el queso (500 frames ≈ 8.3 segundos)
+        // Ofrece el queso
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
@@ -335,19 +335,29 @@
         if (timer > 500) { state = 6; timer = 0; }
       }
       else if (state === 6) {
-        // Ella camina despacio hacia él
+        // Ella camina ULTRA DESPACIO hacia él
         if (m2X < 475) {
-          m2X += 0.3;
+          m2X += 0.12; // Velocidad reducida a más de la mitad
           drawMouse(m1X, mY, true, false, 'normal');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
-          state = 7;
+          state = 65; // Sub-estado para que se quede quieta al llegar antes de cambiar texto
           timer = 0;
         }
         drawSubtitle("Ella se acerca a él dulcemente...");
       }
+      else if (state === 65) {
+        // Pausa al llegar (350 frames ≈ 6 segundos de tiempo de lectura extra)
+        timer++;
+        drawMouse(m1X, mY, true, false, 'normal');
+        drawMouse(m2X, mY, true, true, 'normal');
+
+        drawSubtitle("Ella se acerca a él dulcemente...");
+
+        if (timer > 350) { state = 7; timer = 0; }
+      }
       else if (state === 7) {
-        // Filosofía 1 (Aumentado a 600 frames ≈ 10 segundos)
+        // Filosofía 1 (~10 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
@@ -357,7 +367,7 @@
         if (timer > 600) { state = 8; timer = 0; }
       }
       else if (state === 8) {
-        // Filosofía 2 (Aumentado a 700 frames ≈ 11.5 segundos)
+        // Filosofía 2 (~11.5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
@@ -367,7 +377,7 @@
         if (timer > 700) { state = 9; timer = 0; }
       }
       else if (state === 9) {
-        // Final romántico que se mantiene de forma indefinida
+        // Final romántico
         timer++;
         drawMouse(m1X, mY, true, false, 'happy');
         drawMouse(m2X, mY, false, true, 'love');
