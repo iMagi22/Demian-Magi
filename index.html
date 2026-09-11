@@ -1,453 +1,1605 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Rata de Ciudad - Edición Ultra Pausada 8-Bits</title>
-  <style>
-    body {
-      background-color: #050608;
-      color: #ffffff;
-      font-family: 'Courier New', Courier, monospace;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<title>Para Ti 💕</title>
+<style>
+  :root{
+    --pink-deep:#ff4f8b;
+    --pink-mid:#ff86b3;
+    --pink-light:#ffc6dd;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#2a1030;font-family:'Courier New', monospace;}
 
-    h1 {
-      font-size: 16px;
-      color: #ff79c6;
-      margin-bottom: 10px;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px #000;
-    }
+  .page{
+    position:relative;
+    min-height:100vh;
+    width:100%;
+    background:linear-gradient(160deg,#120a20 0%, #221230 35%, #301a3a 65%, #3a1f42 100%);
+    display:flex;
+    justify-content:center;
+    overflow:hidden;
+  }
 
-    .game-container {
-      position: relative;
-      border: 4px solid #fff;
-      box-shadow: 0 0 35px rgba(255, 121, 198, 0.3);
-      background: #000;
-    }
+  /* ============ PAISAJE LATERAL (amanecer completo) ============ */
+  .side-strip{
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:90px;
+    z-index:1;
+    overflow:hidden;
+    pointer-events:none;
+  }
+  .side-strip.left{ left:0; }
+  .side-strip.right{ right:0; transform:scaleX(-1); }
 
-    canvas {
-      display: block;
-      image-rendering: pixelated;
-    }
+  .side-strip canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    image-rendering:pixelated;
+  }
 
-    .controls {
-      margin-top: 16px;
-      display: flex;
-      gap: 12px;
-    }
+  .hearts-col{ position:absolute; inset:0; overflow:hidden; }
 
-    button {
-      background: #ff79c6;
-      border: 2px solid #fff;
-      color: #000;
-      padding: 10px 22px;
-      font-family: 'Courier New', Courier, monospace;
-      font-weight: bold;
-      cursor: pointer;
-      text-transform: uppercase;
-      box-shadow: 4px 4px 0px #000;
-      transition: all 0.1s ease;
-    }
+  .stars-overlay{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:2;
+  }
+  .twinkle-star{
+    position:absolute;
+    background:#fff;
+    border-radius:50%;
+    animation-name:twinkleStar;
+    animation-timing-function:ease-in-out;
+    animation-iteration-count:infinite;
+  }
+  @keyframes twinkleStar{
+    0%,100%{ opacity:.15; transform:scale(.7); }
+    50%{ opacity:1; transform:scale(1.15); }
+  }
 
-    button:hover {
-      background: #50fa7b;
-      color: #000;
-    }
+  .side-heart{
+    position:absolute;
+    top:-30px;
+    font-size:14px;
+    color:#fff;
+    text-shadow:0 0 3px rgba(255,79,139,.9);
+    animation-name:sideFall;
+    animation-timing-function:linear;
+    animation-iteration-count:infinite;
+    opacity:.95;
+  }
+  @keyframes sideFall{
+    0%{ transform:translateY(0) translateX(0); opacity:0;}
+    6%{opacity:1;}
+    100%{ transform:translateY(115vh) translateX(var(--jit,6px)); opacity:.9;}
+  }
 
-    button:active {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0px #000;
-    }
-  </style>
+  /* ============ COLUMNA CENTRAL ============ */
+  .main-content{
+    position:relative;
+    z-index:5;
+    width:min(560px, calc(100% - 200px));
+    padding:26px 10px 50px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .title-box{
+    border:4px solid rgba(255,255,255,.85);
+    border-radius:2px;
+    padding:14px 28px;
+    text-align:center;
+    background:rgba(255,255,255,.04);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    box-shadow:0 0 0 3px rgba(255,79,139,.4);
+  }
+  .title-box h1{
+    margin:0;
+    font-size:19px;
+    letter-spacing:1.5px;
+    color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.4), 0 0 14px rgba(255,79,139,.6);
+  }
+  .subtitle{
+    margin-top:12px;
+    font-size:11px;
+    color:#ffe0ec;
+    letter-spacing:1px;
+    text-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+  @keyframes blink{ 50%{opacity:.25;} }
+  .blink{ animation:blink 1.2s infinite; }
+
+  /* ============ PANEL DE LA HISTORIA / MINI-JUEGO ============ */
+  .game-area{
+    position:relative;
+    width:100%;
+    margin-top:26px;
+    background:rgba(255,255,255,.03);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:3px dashed rgba(255,255,255,.4);
+    border-radius:10px;
+    padding:18px 16px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .story-heading{
+    font-size:12px;
+    color:var(--pink-light);
+    letter-spacing:2px;
+    text-shadow:1px 1px 0 #000;
+    margin:0 0 12px;
+  }
+
+  .game-container{
+    position:relative;
+    width:100%;
+    max-width:440px;
+    border:4px solid #fff;
+    box-shadow:0 0 30px rgba(255,121,198,.4);
+    background:#000;
+  }
+  #gameCanvas, #gameCanvasCampo, #gameCanvasCiudad{
+    display:block;
+    width:100%;
+    height:auto;
+    image-rendering:pixelated;
+  }
+
+  .controls{
+    margin-top:16px;
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .story-btn{
+    background:#bd93f9;
+    border:2px solid #fff;
+    color:#000;
+    padding:10px 18px;
+    font-family:'Courier New', monospace;
+    font-weight:bold;
+    font-size:11px;
+    cursor:pointer;
+    text-transform:uppercase;
+    box-shadow:4px 4px 0px rgba(0,0,0,.5);
+    transition:all .1s ease;
+  }
+  .story-btn:hover{ background:var(--pink-mid); color:#fff; }
+  .story-btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0px rgba(0,0,0,.5); }
+
+  /* ============ RATA DE CAMPO / RATA DE CIUDAD ============ */
+  .choice-area{
+    width:100%;
+    margin-top:26px;
+    background:rgba(255,255,255,.04);
+    backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);
+    border:3px solid rgba(255,255,255,.6);
+    box-shadow:0 0 0 3px rgba(255,79,139,.4);
+    border-radius:4px;
+    padding:22px 18px;
+    text-align:center;
+  }
+  .choice-question{
+    margin:0 0 18px;
+    font-size:13px;
+    line-height:1.7;
+    color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.4);
+  }
+  .choice-buttons{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .choice-btn{
+    font-family:inherit;
+    font-size:12px;
+    color:#fff;
+    background:var(--pink-deep);
+    border:3px solid #fff;
+    box-shadow:0 0 0 3px var(--pink-deep), 4px 4px 0 rgba(0,0,0,.2);
+    padding:12px 18px;
+    cursor:pointer;
+    letter-spacing:.5px;
+  }
+  .choice-btn:hover{ background:var(--pink-mid); }
+  .choice-btn.selected{ background:#fff; color:var(--pink-deep); }
+  .choice-btn:active{ transform:translate(2px,2px); }
+  .choice-note{
+    margin-top:16px;
+    font-size:12px;
+    min-height:16px;
+    color:#ffe0ec;
+    text-shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+
+  /* ============ CARTA (banner rosita) ============ */
+  .letter-wrap{
+    width:100%;
+    margin-top:26px;
+    background:linear-gradient(150deg, rgba(255,79,139,.42) 0%, rgba(255,134,179,.42) 55%, rgba(255,79,139,.42) 100%);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+    clip-path:polygon(0 3%, 3% 0, 97% 0, 100% 3%, 100% 97%, 97% 100%, 3% 100%, 0 97%);
+    box-shadow:6px 6px 0 rgba(0,0,0,.12), 0 0 0 3px rgba(255,255,255,.65) inset;
+    padding:26px 22px 22px;
+    opacity:0;
+    transform:translateY(24px) scale(.96);
+    transition:all .8s ease;
+    pointer-events:none;
+  }
+  .letter-wrap.show{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+  .letter-wrap h2{
+    font-size:20px; color:#fff; text-align:center;
+    margin:0 0 16px; letter-spacing:2px;
+    font-family:Georgia,'Times New Roman',serif;
+    text-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  .letter-wrap p{
+    font-size:13px; line-height:1.95; color:#fff0f6;
+    font-family:Georgia,'Times New Roman',serif; margin:0 0 12px;
+    text-shadow:0 1px 2px rgba(0,0,0,.12);
+  }
+  .signature{
+    text-align:right; font-family:Georgia,serif; font-style:italic;
+    color:#fff; font-size:14px; margin-top:10px;
+    text-shadow:0 1px 2px rgba(0,0,0,.15);
+  }
+  .mini-hearts{ text-align:center; margin-top:10px; font-size:14px; color:#fff; }
+
+  .music-btn{
+    position:fixed;
+    top:14px;
+    right:14px;
+    z-index:50;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.85);
+    background:rgba(255,79,139,.55);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+    color:#fff;
+    font-size:17px;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .music-btn:hover{ background:rgba(255,79,139,.8); }
+
+  @media (max-width:560px){
+    .side-strip{ width:46px; }
+    .main-content{ width:calc(100% - 100px); }
+  }
+</style>
 </head>
 <body>
 
-  <h1>[ LA RATA DE CIUDAD - LECTURA ULTRA LENTA ]</h1>
+<button class="music-btn" id="musicToggle" aria-label="Música" title="Música de fondo: In the pool — Kensuke Ushio">🎵</button>
+<div style="position:fixed;width:2px;height:2px;opacity:0;pointer-events:none;overflow:hidden;">
+  <iframe id="bgMusic"
+    width="2" height="2"
+    src="https://www.youtube.com/embed/Y3UH_9ZV1-A?enablejsapi=1&loop=1&playlist=Y3UH_9ZV1-A"
+    frameborder="0"
+    allow="autoplay; encrypted-media">
+  </iframe>
+</div>
 
-  <div class="game-container">
-    <canvas id="gameCanvas" width="480" height="270"></canvas>
+<div class="page">
+
+  <div class="side-strip left">
+    <canvas id="sunsetL" width="40" height="320"></canvas>
+    <div class="stars-overlay" id="starsOverlayL"></div>
+    <div class="hearts-col" id="heartsColL"></div>
   </div>
 
-  <div class="controls">
-    <button onclick="startStory()">▶ Iniciar Historia</button>
-    <button onclick="resetStory()">↺ Reiniciar Escena</button>
+  <div class="main-content">
+    <div class="title-box">
+      <h1>DEMIAN &amp; MAGI</h1>
+    </div>
+
+    <div class="game-area">
+      <p class="story-heading">Historia de Demian &amp; Magi</p>
+      <div class="game-container">
+        <canvas id="gameCanvas" width="480" height="270"></canvas>
+      </div>
+      <div class="controls">
+        <button class="story-btn" onclick="startAnimation()">▶ Comenzar Nuestra Historia</button>
+        <button class="story-btn" onclick="resetAnimation()">↺ Reiniciar Escena</button>
+      </div>
+    </div>
+
+    <div class="letter-wrap show" id="letterWrap">
+      <h2>Demian</h2>
+      <p>Desde que llegaste a mi vida has despertado un lado en mí que no pensé que existiera, te has convertido en una persona muy importante para mí en poco tiempo, es difícil describir lo que siento en este momento, solo sé que te quiero y te quiero en mi vida hasta donde se pueda, sea un capítulo o un libro entero o el final del libro de uno de los dos.</p>
+      <p>Espero poder conocer cada parte que hace que seas Demian y amar cada una de ellas tal cual eres, gracias por dejarme formar parte de tu vida y gracias por formar parte de la mía.</p>
+      <div class="signature">tuya, Magi 💌</div>
+      <div class="mini-hearts">♡ ♡ ♡</div>
+    </div>
+
+    <div class="choice-area">
+      <p class="choice-question">Demian... ¿tú quieres ser<br><strong>Rata de Campo</strong> o <strong>Rata de Ciudad</strong>? 🐭🏙️</p>
+      <div class="choice-buttons">
+        <button class="choice-btn" id="btnCampo">🐭 Rata de Campo</button>
+        <button class="choice-btn" id="btnCiudad">🏙️ Rata de Ciudad</button>
+      </div>
+      <p class="choice-note" id="choiceNote"></p>
+    </div>
+
+    <div class="game-area" id="campoGameArea" style="display:none;">
+      <p class="story-heading">[ LA RATA DE CAMPO · EDICIÓN PAUSADA ]</p>
+      <div class="game-container">
+        <canvas id="gameCanvasCampo" width="480" height="270"></canvas>
+      </div>
+      <div class="controls">
+        <button class="story-btn" onclick="startStoryCampo()">▶ Iniciar Historia</button>
+        <button class="story-btn" onclick="resetStoryCampo()">↺ Reiniciar Escena</button>
+      </div>
+    </div>
+
+    <div class="game-area" id="ciudadGameArea" style="display:none;">
+      <p class="story-heading">[ LA RATA DE CIUDAD · LECTURA LENTA ]</p>
+      <div class="game-container">
+        <canvas id="gameCanvasCiudad" width="480" height="270"></canvas>
+      </div>
+      <div class="controls">
+        <button class="story-btn" onclick="startStoryCiudad()">▶ Iniciar Historia</button>
+        <button class="story-btn" onclick="resetStoryCiudad()">↺ Reiniciar Escena</button>
+      </div>
+    </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+  <div class="side-strip right">
+    <canvas id="sunsetR" width="40" height="320"></canvas>
+    <div class="stars-overlay" id="starsOverlayR"></div>
+    <div class="hearts-col" id="heartsColR"></div>
+  </div>
 
-    // Escalado de pantalla
-    canvas.style.width = (canvas.width * 2.3) + 'px';
-    canvas.style.height = (canvas.height * 2.3) + 'px';
+</div>
 
-    let frame = 0;
-    let state = 0;
-    let timer = 0;
-    let particles = [];
+<script>
+/* ================================================================
+   MÚSICA DE FONDO — "in the pool" · Kensuke Ushio
+   ================================================================ */
+const bgMusic = document.getElementById('bgMusic');
+const musicToggle = document.getElementById('musicToggle');
+let musicPlaying = false;
 
-    // Posiciones y cámara
-    let cameraX = 0;
-    let m1X = 30;
-    let m2X = 5;
-    let mY = 172;
-    
-    // El Gato Enemigo
-    let catX = -120;
-    let catY = 145;
-    let catShow = false;
+function ytCommand(func){
+  bgMusic.contentWindow.postMessage(JSON.stringify({event:'command', func:func, args:[]}), '*');
+}
 
-    function drawPixelRect(x, y, w, h, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(Math.round(x - cameraX), Math.round(y), w, h);
+musicToggle.addEventListener('click', () => {
+  if(!musicPlaying){
+    ytCommand('playVideo');
+    musicToggle.textContent = '🔊';
+  } else {
+    ytCommand('pauseVideo');
+    musicToggle.textContent = '🎵';
+  }
+  musicPlaying = !musicPlaying;
+});
+
+/* ================================================================
+   PAISAJE DE AMANECER EN LOS COSTADOS + CORAZONES CAYENDO
+   ================================================================ */
+function drawSideLandscape(canvas){
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  const w = canvas.width, h = canvas.height;
+  const grad = [
+    [0,'#070512'],[0.18,'#0e0a24'],[0.36,'#181038'],
+    [0.55,'#241448'],[0.72,'#2c1650'],[0.86,'#1c0e38'],
+    [1,'#0c071c']
+  ];
+  for(let y=0;y<h;y++){
+    const t=y/h;
+    let color='#0c071c';
+    for(let i=0;i<grad.length-1;i++){
+      if(t>=grad[i][0] && t<grad[i+1][0]){ color=grad[i][1]; break;}
     }
+    ctx.fillStyle=color;
+    ctx.fillRect(0,y,w,1);
+  }
 
-    function drawFixedPixelRect(x, y, w, h, color) {
-      ctx.fillStyle = color;
-      ctx.fillRect(Math.round(x), Math.round(y), w, h);
+  // luna con sombreado real y halo en capas
+  const mx = w*0.55, my = h*0.15, mr = w*0.30;
+
+  const halo = ctx.createRadialGradient(mx,my,mr*0.5, mx,my,mr*2.6);
+  halo.addColorStop(0,'rgba(255,247,224,.28)');
+  halo.addColorStop(0.5,'rgba(255,247,224,.08)');
+  halo.addColorStop(1,'rgba(255,247,224,0)');
+  ctx.fillStyle = halo;
+  ctx.beginPath();
+  ctx.arc(mx,my,mr*2.6,0,Math.PI*2);
+  ctx.fill();
+
+  const moonGrad = ctx.createRadialGradient(mx-mr*0.4, my-mr*0.4, mr*0.15, mx, my, mr*1.05);
+  moonGrad.addColorStop(0, '#fffdf5');
+  moonGrad.addColorStop(0.45, '#fff3d2');
+  moonGrad.addColorStop(0.8, '#f0d9a0');
+  moonGrad.addColorStop(1, '#d8b878');
+  ctx.fillStyle = moonGrad;
+  ctx.beginPath();
+  ctx.arc(mx,my,mr,0,Math.PI*2);
+  ctx.fill();
+
+  // cráteres con sombreado suave
+  const craters = [
+    [-0.35,-0.10,0.16], [0.10,0.32,0.11], [0.36,-0.28,0.10],
+    [-0.05,0.02,0.08], [0.22,0.10,0.07], [-0.22,0.35,0.06]
+  ];
+  craters.forEach(([cx2,cy2,cr2])=>{
+    const px = mx + cx2*mr*2, py = my + cy2*mr*2, pr = cr2*mr*2;
+    ctx.fillStyle = 'rgba(190,160,115,.5)';
+    ctx.beginPath();
+    ctx.arc(px, py, pr, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,250,235,.35)';
+    ctx.beginPath();
+    ctx.arc(px - pr*0.25, py - pr*0.25, pr*0.4, 0, Math.PI*2);
+    ctx.fill();
+  });
+
+  // sombra sutil del lado oscuro
+  const shadow = ctx.createRadialGradient(mx+mr*0.5, my+mr*0.5, mr*0.2, mx, my, mr*1.02);
+  shadow.addColorStop(0, 'rgba(120,90,60,.25)');
+  shadow.addColorStop(1, 'rgba(120,90,60,0)');
+  ctx.fillStyle = shadow;
+  ctx.beginPath();
+  ctx.arc(mx,my,mr,0,Math.PI*2);
+  ctx.fill();
+
+  // estrellas de varios tamaños
+  ctx.fillStyle = '#ffffff';
+  for(let i=0;i<46;i++){
+    const sx = Math.floor(Math.random()*w);
+    const sy = Math.floor(Math.random()*h*0.85);
+    const big = Math.random() < 0.18;
+    if(big){
+      ctx.globalAlpha = 0.9;
+      ctx.fillRect(sx, sy, 2, 2);
+      ctx.globalAlpha = 0.5;
+      ctx.fillRect(sx-2, sy+1, 1, 1);
+      ctx.fillRect(sx+3, sy+1, 1, 1);
+      ctx.fillRect(sx+1, sy-2, 1, 1);
+      ctx.fillRect(sx+1, sy+3, 1, 1);
+    } else {
+      ctx.globalAlpha = 0.35 + Math.random()*0.55;
+      ctx.fillRect(sx, sy, 1, 1);
     }
+  }
+  ctx.globalAlpha = 1;
 
-    // FONDO: CALLEJÓN DE LA CIUDAD
-    function drawBackground() {
-      // Cielo nocturno urbano
-      drawFixedPixelRect(0, 0, 480, 180, '#0a0914');
-      drawFixedPixelRect(0, 100, 480, 80, '#121024');
+  // nebulosa/aurora sutil
+  ctx.fillStyle = 'rgba(184,90,170,.06)';
+  for(let x=0;x<w;x++){
+    const ny = h*0.30 + Math.sin(x*0.06)*10;
+    ctx.fillRect(x, Math.round(ny), 1, 22);
+  }
 
-      // Edificios lejanos con luces
-      for (let i = -100; i < 900; i += 70) {
-        drawPixelRect(i, 20, 60, 160, '#1a1829');
-        for (let wy = 30; wy < 150; wy += 20) {
-          if ((i + wy) % 3 === 0) {
-            drawPixelRect(i + 10, wy, 8, 12, '#ffb86c');
-            drawPixelRect(i + 35, wy, 8, 12, '#8be9fd');
-          }
-        }
-      }
+  // colinas silueta
+  ctx.fillStyle = '#160b28';
+  for(let x=0;x<w;x++){
+    const mh = 10 + Math.round(Math.abs(Math.sin(x*0.35))*14);
+    ctx.fillRect(x, h-mh, 1, mh);
+  }
+  ctx.fillStyle = '#0a0616';
+  for(let x=0;x<w;x++){
+    const mh = 4 + Math.round(Math.abs(Math.cos(x*0.5))*8);
+    ctx.fillRect(x, h-mh, 1, mh);
+  }
+}
+drawSideLandscape(document.getElementById('sunsetL'));
+drawSideLandscape(document.getElementById('sunsetR'));
 
-      // Edificios cercanos (Callejón)
-      drawPixelRect(-150, 0, 120, 180, '#0f0d1a');
-      drawPixelRect(300, 0, 150, 180, '#0f0d1a');
-      drawPixelRect(650, 0, 200, 180, '#0f0d1a');
+function spawnTwinkleStars(container, count){
+  for(let i=0;i<count;i++){
+    const s = document.createElement('div');
+    s.className = 'twinkle-star';
+    const size = 1 + Math.random()*2.2;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = (Math.random()*94+3)+'%';
+    s.style.top = (Math.random()*72+2)+'%';
+    s.style.boxShadow = '0 0 '+(size*2)+'px rgba(255,255,255,.9)';
+    s.style.animationDuration = (1.6 + Math.random()*2.6)+'s';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    container.appendChild(s);
+  }
+}
+spawnTwinkleStars(document.getElementById('starsOverlayL'), 16);
+spawnTwinkleStars(document.getElementById('starsOverlayR'), 16);
 
-      // Suelo de Asfalto
-      drawFixedPixelRect(0, 180, 480, 90, '#1c1b29');
-      drawFixedPixelRect(0, 180, 480, 4, '#383552');
+function spawnSideHearts(container, stripWidth){
+  function spawn(){
+    const h = document.createElement('div');
+    h.className='side-heart';
+    h.textContent = Math.random()>0.5 ? '♥':'💗';
+    const baseX = 10 + Math.random()*(stripWidth-20);
+    h.style.left = baseX+'px';
+    const jit = (Math.random()*16-8)+'px';
+    h.style.setProperty('--jit', jit);
+    const dur = 5 + Math.random()*5;
+    h.style.animationDuration = dur+'s';
+    h.style.fontSize = (10+Math.random()*8)+'px';
+    container.appendChild(h);
+    setTimeout(()=>h.remove(), dur*1000+400);
+  }
+  for(let i=0;i<6;i++){ setTimeout(spawn, i*400); }
+  setInterval(spawn, 700);
+}
+spawnSideHearts(document.getElementById('heartsColL'), 90);
+spawnSideHearts(document.getElementById('heartsColR'), 90);
 
-      // Tuberías y Cajas
-      drawPixelRect(120, 140, 30, 40, '#282a36');
-      drawPixelRect(280, 150, 25, 30, '#44475a');
+/* ================================================================
+   NUESTRA HISTORIA — MINI-JUEGO / ESCENA 8-BIT
+   ================================================================ */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
 
-      // Reflejos Neón
-      drawPixelRect(80, 182, 40, 2, '#ff79c6');
-      drawPixelRect(240, 182, 50, 2, '#bd93f9');
-      drawPixelRect(480, 182, 60, 2, '#50fa7b');
+let frame = 0;
+let animState = 0;
+let timer = 0;
+let particles = [];
+
+let girlX = 175;
+let boyX = 210;
+let doorOpen = false;
+
+function drawPixelRect(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x), Math.round(y), w, h);
+}
+
+function drawBackground() {
+  drawPixelRect(0, 0, 480, 80, '#060712');
+  drawPixelRect(0, 80, 480, 60, '#0a0d1d');
+  drawPixelRect(0, 140, 480, 50, '#111528');
+
+  let stars = [
+    [15, 20], [50, 35], [90, 15], [140, 28], [210, 15], [260, 35],
+    [320, 18], [370, 40], [420, 12], [450, 50], [180, 55], [300, 70]
+  ];
+  stars.forEach(([sx, sy], i) => {
+    if ((frame + i * 8) % 35 < 24) {
+      drawPixelRect(sx, sy, 2, 2, '#ffffff');
     }
+  });
 
-    // DIBUJAR GATO
-    function drawCat(x, y) {
-      if (!catShow) return;
-      
-      drawPixelRect(x, y + 10, 40, 20, '#111116');
-      drawPixelRect(x + 32, y + 2, 22, 20, '#111116');
-      drawPixelRect(x + 34, y - 6, 6, 8, '#111116');
-      drawPixelRect(x + 46, y - 6, 6, 8, '#111116');
-      drawPixelRect(x + 42, y + 8, 4, 5, '#f1fa8c');
-      drawPixelRect(x + 50, y + 8, 4, 5, '#f1fa8c');
-      drawPixelRect(x + 44, y + 9, 1, 3, '#000000');
-      drawPixelRect(x + 52, y + 9, 1, 3, '#000000');
-      
-      let tailWiggle = Math.sin(frame * 0.2) * 4;
-      drawPixelRect(x - 12, y + 8 + tailWiggle, 14, 4, '#111116');
-      let leg = Math.sin(frame * 0.4) * 6;
-      drawPixelRect(x + 5 + leg, y + 30, 6, 8, '#111116');
-      drawPixelRect(x + 28 - leg, y + 30, 6, 8, '#111116');
+  drawPixelRect(410, 18, 24, 24, '#ffffd0');
+  drawPixelRect(406, 22, 32, 16, '#ffffd0');
+
+  let cloudOffset = (frame * 0.25) % 520;
+  let clouds = [
+    [cloudOffset - 40, 25], [cloudOffset + 180 - 520, 40], [cloudOffset + 380 - 520, 20]
+  ];
+  clouds.forEach(([cx, cy]) => {
+    drawPixelRect(cx, cy, 50, 8, 'rgba(40, 50, 80, 0.4)');
+    drawPixelRect(cx + 10, cy - 4, 30, 12, 'rgba(40, 50, 80, 0.4)');
+  });
+
+  drawPixelRect(130, 110, 45, 80, '#131625');
+  drawPixelRect(138, 125, 10, 12, '#ffe375');
+
+  drawPixelRect(280, 100, 55, 90, '#101322');
+  drawPixelRect(290, 115, 12, 14, '#ffb86c');
+  drawPixelRect(312, 115, 12, 14, '#1a1f33');
+  drawPixelRect(290, 140, 12, 14, '#ffb86c');
+
+  drawPixelRect(380, 118, 60, 72, '#141829');
+  drawPixelRect(395, 130, 14, 18, '#ffe375');
+
+  drawPixelRect(0, 40, 130, 150, '#1c1f2e');
+  drawPixelRect(0, 30, 140, 10, '#121420');
+  drawPixelRect(0, 22, 135, 8, '#ff3344');
+
+  drawPixelRect(25, 65, 40, 50, '#f1fa8c');
+  drawPixelRect(25, 65, 40, 3, '#121420');
+  drawPixelRect(44, 65, 3, 50, '#121420');
+  drawPixelRect(25, 90, 40, 3, '#121420');
+
+  drawPixelRect(85, 120, 35, 70, '#0d0e17');
+  drawPixelRect(112, 155, 3, 4, '#ffb86c');
+
+  drawPixelRect(118, 48, 12, 4, '#6272a4');
+  drawPixelRect(128, 50, 16, 9, '#f8f8f2');
+  drawPixelRect(142, 53, 5, 5, '#111116');
+  if (Math.floor(frame / 15) % 2 === 0) {
+    drawPixelRect(138, 51, 3, 3, '#ff3344');
+  }
+
+  let carX = 175;
+  let carY = 142;
+
+  drawPixelRect(carX - 5, carY + 28, 115, 6, '#06070a');
+
+  drawPixelRect(carX, carY + 10, 105, 20, '#101117');
+  drawPixelRect(carX + 25, carY, 65, 14, '#191b24');
+
+  drawPixelRect(carX + 31, carY + 2, 26, 10, '#3d4052');
+  drawPixelRect(carX + 61, carY + 2, 22, 10, '#3d4052');
+
+  drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff2233');
+  drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0');
+
+  if (doorOpen) {
+    drawPixelRect(carX + 61, carY + 2, 8, 26, '#050508');
+    drawPixelRect(carX + 67, carY + 4, 8, 24, '#242735');
+  }
+
+  drawPixelRect(carX + 18, carY + 22, 18, 12, '#050507');
+  drawPixelRect(carX + 72, carY + 22, 18, 12, '#050507');
+  drawPixelRect(carX + 23, carY + 25, 8, 6, '#6272a4');
+  drawPixelRect(carX + 77, carY + 25, 8, 6, '#6272a4');
+
+  drawPixelRect(0, 190, 480, 80, '#14151e');
+  drawPixelRect(0, 190, 480, 4, '#32344a');
+  for(let i = 0; i < 480; i += 50) {
+    drawPixelRect(i, 230, 25, 3, '#222330');
+  }
+}
+
+function drawBoy(x, y, showFlowers = false, pose = 'normal') {
+  let lookCam = (pose === 'look_cam');
+
+  drawPixelRect(x - 2, y + 2, 4, 11, '#ff3344');
+  drawPixelRect(x + 14, y + 2, 4, 11, '#ff3344');
+  drawPixelRect(x + 1, y - 3, 14, 4, '#282a36');
+
+  drawPixelRect(x + 2, y, 12, 6, '#211510');
+  drawPixelRect(x + 4, y - 1, 6, 2, '#332118');
+
+  drawPixelRect(x + 2, y + 5, 12, 11, '#f1c27d');
+  drawPixelRect(x + 2, y + 15, 12, 1, '#d8a764');
+
+  if (lookCam) {
+    drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff');
+    drawPixelRect(x + 1, y + 6, 2, 2, '#111');
+    drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff');
+    drawPixelRect(x + 6, y + 6, 2, 2, '#111');
+    drawPixelRect(x + 1, y + 13, 11, 3, '#382518');
+  } else {
+    drawPixelRect(x + 4, y + 8, 2, 3, '#111');
+    drawPixelRect(x + 9, y + 8, 2, 3, '#111');
+    drawPixelRect(x + 2, y + 13, 12, 3, '#382518');
+    drawPixelRect(x + 5, y + 12, 6, 1, '#382518');
+  }
+
+  drawPixelRect(x, y + 16, 16, 17, '#111116');
+  drawPixelRect(x + 1, y + 16, 1, 16, '#1a1a22');
+  drawPixelRect(x + 3, y + 19, 10, 8, '#a81c2e');
+  drawPixelRect(x + 5, y + 21, 6, 4, '#dc284d');
+
+  if (pose === 'hug') {
+    drawPixelRect(x - 8, y + 17, 10, 6, '#f1c27d');
+  } else if (showFlowers) {
+    drawPixelRect(x - 8, y + 18, 10, 6, '#f1c27d');
+    let fx = x - 20;
+    let fy = y + 10;
+    drawPixelRect(fx + 5, fy + 10, 4, 12, '#50fa7b');
+    drawPixelRect(fx - 2, fy - 4, 14, 12, '#ff79c6');
+    drawPixelRect(fx, fy - 6, 10, 12, '#ffb86c');
+    drawPixelRect(fx + 3, fy - 1, 5, 5, '#ff3344');
+  } else if (pose === 'point') {
+    drawPixelRect(x - 12, y + 10, 14, 4, '#f1c27d');
+    drawPixelRect(x + 16, y + 16, 5, 12, '#f1c27d');
+  } else {
+    drawPixelRect(x - 5, y + 16, 5, 15, '#f1c27d');
+    drawPixelRect(x + 16, y + 16, 5, 15, '#f1c27d');
+  }
+
+  drawPixelRect(x + 1, y + 33, 14, 18, '#181920');
+  drawPixelRect(x + 1, y + 34, 2, 15, '#2e303d');
+  drawPixelRect(x + 7, y + 33, 2, 18, '#0d0e12');
+  drawPixelRect(x, y + 51, 6, 5, '#282a36');
+  drawPixelRect(x + 10, y + 51, 6, 5, '#282a36');
+  drawPixelRect(x, y + 55, 6, 1, '#ffffff');
+  drawPixelRect(x + 10, y + 55, 6, 1, '#ffffff');
+}
+
+function drawGirl(x, y, heartEyes = false, pose = 'normal') {
+  let lookCam = (pose === 'look_cam');
+
+  drawPixelRect(x - 6, y - 3, 26, 33, '#0b0c10');
+  drawPixelRect(x - 7, y + 4, 4, 22, '#0b0c10');
+
+  drawPixelRect(x - 1, y - 2, 10, 5, '#bc1b3b');
+  drawPixelRect(x + 2, y + 2, 5, 4, '#dc284d');
+  drawPixelRect(x - 5, y + 3, 4, 20, '#bc1b3b');
+
+  drawPixelRect(x + 2, y + 5, 12, 10, '#ffe4c4');
+  drawPixelRect(x + 2, y + 14, 12, 1, '#e5be9e');
+
+  drawPixelRect(x + 1, y + 10, 3, 2, '#ff99aa');
+  drawPixelRect(x + 12, y + 10, 3, 2, '#ff99aa');
+
+  if (lookCam) {
+    drawPixelRect(x + 2, y + 5, 3, 4, '#6a432d');
+    drawPixelRect(x + 8, y + 5, 3, 4, '#6a432d');
+    drawPixelRect(x + 2, y + 5, 2, 2, '#1a100a');
+    drawPixelRect(x + 8, y + 5, 2, 2, '#1a100a');
+    drawPixelRect(x + 4, y + 5, 1, 1, '#ffffff');
+    drawPixelRect(x + 10, y + 5, 1, 1, '#ffffff');
+  } else if (heartEyes) {
+    drawPixelRect(x + 2, y + 5, 4, 4, '#ff3366');
+    drawPixelRect(x + 8, y + 5, 4, 4, '#ff3366');
+    drawPixelRect(x + 3, y + 5, 2, 2, '#ff79c6');
+    drawPixelRect(x + 9, y + 5, 2, 2, '#ff79c6');
+  } else {
+    drawPixelRect(x + 2, y + 5, 3, 4, '#6a432d');
+    drawPixelRect(x + 8, y + 5, 3, 4, '#6a432d');
+    drawPixelRect(x + 3, y + 6, 2, 3, '#1a100a');
+    drawPixelRect(x + 9, y + 6, 2, 3, '#1a100a');
+    drawPixelRect(x + 2, y + 5, 1, 1, '#ffffff');
+    drawPixelRect(x + 8, y + 5, 1, 1, '#ffffff');
+    drawPixelRect(x + 1, y + 4, 5, 1, '#0a0a0f');
+    drawPixelRect(x + 7, y + 4, 5, 1, '#0a0a0f');
+  }
+
+  drawPixelRect(x + 5, y + 12, 5, 2, '#d62839');
+
+  drawPixelRect(x + 1, y + 15, 14, 16, '#0f1015');
+  drawPixelRect(x + 3, y + 17, 10, 11, '#7a1122');
+  drawPixelRect(x + 4, y + 18, 8, 9, '#bc1b3b');
+  drawPixelRect(x + 6, y + 19, 4, 4, '#ff3366');
+  drawPixelRect(x + 5, y + 24, 6, 2, '#0f1015');
+
+  if (pose === 'excited') {
+    drawPixelRect(x - 5, y + 8, 5, 10, '#ffe4c4');
+    drawPixelRect(x + 14, y + 8, 5, 10, '#ffe4c4');
+  } else if (pose === 'hug') {
+    drawPixelRect(x + 8, y + 16, 10, 5, '#ffe4c4');
+  } else {
+    drawPixelRect(x - 3, y + 15, 4, 14, '#ffe4c4');
+    drawPixelRect(x + 13, y + 15, 4, 14, '#ffe4c4');
+  }
+
+  drawPixelRect(x + 2, y + 31, 12, 18, '#1e202b');
+  drawPixelRect(x + 2, y + 31, 2, 18, '#2a2d3d');
+  drawPixelRect(x + 1, y + 49, 5, 7, '#07070a');
+  drawPixelRect(x + 8, y + 49, 5, 7, '#07070a');
+}
+
+function createHeartParticle(x, y) {
+  particles.push({
+    x: x + (Math.random() * 24 - 12),
+    y: y,
+    vy: - (Math.random() * 0.9 + 0.4),
+    life: 55,
+    color: Math.random() > 0.4 ? '#ff3366' : '#ff79c6'
+  });
+}
+
+function updateAndDrawParticles() {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    let p = particles[i];
+    p.y += p.vy;
+    p.life--;
+
+    drawPixelRect(p.x, p.y, 6, 6, p.color);
+    drawPixelRect(p.x + 1, p.y - 1, 4, 1, p.color);
+    drawPixelRect(p.x + 2, p.y + 6, 2, 1, p.color);
+
+    if (p.life <= 0) {
+      particles.splice(i, 1);
     }
+  }
+}
 
-    // DIBUJAR RATA
-    function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
-      let isMoving = (pose === 'walk' || pose === 'run');
-      let speedMult = (pose === 'run') ? 0.25 : 0.1;
-      let legOffset = isMoving ? Math.sin(frame * speedMult) * 3 : 0;
-      let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.12)) * 4 : 0;
-      let actualY = y - happyJump;
+function drawSubtitle(text, speaker = "") {
+  drawPixelRect(40, 210, 400, 48, '#000000');
+  drawPixelRect(42, 212, 396, 44, '#ffffff');
+  drawPixelRect(44, 214, 392, 40, '#111118');
 
-      let bodyColor = isGirl ? '#a88b80' : '#8b8c8e';
-      let backColor = isGirl ? '#bc9e92' : '#a2a3a5';
+  ctx.fillStyle = '#ff79c6';
+  ctx.font = 'bold 12px monospace';
+  if (speaker) {
+    ctx.fillText(speaker, 56, 230);
+  }
 
-      // Cuerpo
-      drawPixelRect(x, actualY, 16, 10, bodyColor);
-      drawPixelRect(x + 2, actualY - 2, 12, 3, backColor);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '12px monospace';
+  ctx.fillText(text, 56, speaker ? 244 : 237);
+}
 
-      // Orejas
-      let earX = isRight ? x + 2 : x + 10;
-      drawPixelRect(earX, actualY - 6, 5, 5, '#ffb86c');
-      drawPixelRect(earX + 1, actualY - 5, 3, 3, '#ff9999');
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  frame++;
 
-      if (isGirl) {
-        drawPixelRect(earX - 2, actualY - 6, 3, 3, '#ff79c6');
-      }
+  drawBackground();
 
-      // Cabeza
-      let headX = isRight ? x + 12 : x - 6;
-      drawPixelRect(headX, actualY + 2, 8, 7, bodyColor);
-      
-      // Nariz
-      let noseX = isRight ? headX + 7 : headX - 1;
-      drawPixelRect(noseX, actualY + 5, 2, 2, '#ff79c6');
+  if (animState === 0) {
+    drawGirl(girlX, 134, false, 'normal');
+    drawBoy(boyX, 134, false, 'normal');
+  }
+  else if (animState === 1) {
+    timer++;
+    drawGirl(girlX, 134, false, 'normal');
+    drawBoy(boyX, 134, false, 'point');
+    drawSubtitle("¡Mira, una cámara de seguridad!", "DEMIAN:");
 
-      // Ojos
-      let eyeX = isRight ? headX + 3 : headX + 3;
-      if (pose === 'happy' || pose === 'love') {
-        drawPixelRect(eyeX, actualY + 2, 3, 1, '#000000');
-        drawPixelRect(eyeX - 1, actualY + 3, 1, 2, '#000000');
-        drawPixelRect(eyeX + 3, actualY + 3, 1, 2, '#000000');
-      } else if (pose === 'scared') {
-        drawPixelRect(eyeX, actualY + 2, 3, 3, '#ffffff');
-        drawPixelRect(eyeX + 1, actualY + 3, 1, 1, '#000000');
-      } else {
-        drawPixelRect(eyeX, actualY + 3, 2, 2, '#000000');
-        drawPixelRect(eyeX, actualY + 3, 1, 1, '#ffffff');
-      }
-
-      // Cola
-      let tailX = isRight ? x - 8 : x + 16;
-      drawPixelRect(tailX, actualY + 6, 8, 2, '#e0a0a0');
-      drawPixelRect(isRight ? tailX - 3 : tailX + 8, actualY + 3 + (legOffset * 0.4), 4, 2, '#e0a0a0');
-
-      // Patitas
-      drawPixelRect(x + 2 + legOffset, actualY + 10, 3, 2, '#555');
-      drawPixelRect(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
-    }
-
-    // BANQUETE DE LA CIUDAD
-    function drawFeast(x, y) {
-      drawPixelRect(x, y - 5, 18, 14, '#f1fa8c');
-      drawPixelRect(x + 4, y - 9, 10, 5, '#f1fa8c');
-      drawPixelRect(x + 4, y, 4, 4, '#ffb86c');
-
-      drawPixelRect(x + 22, y - 2, 16, 10, '#ff5555');
-      drawPixelRect(x + 24, y - 4, 12, 3, '#ff79c6');
-      drawPixelRect(x + 22, y - 2, 3, 10, '#ffffff');
-
-      drawPixelRect(x + 42, y + 1, 12, 7, '#ffb86c');
-      drawPixelRect(x + 44, y - 1, 8, 3, '#ff79c6');
-    }
-
-    // PARTÍCULAS
-    function createHeart(x, y) {
-      particles.push({
-        x: x + (Math.random() * 16 - 8),
-        y: y,
-        vy: -0.3,
-        life: 70,
-        color: Math.random() > 0.3 ? '#ff79c6' : '#bd93f9'
-      });
-    }
-
-    function updateParticles() {
-      for (let i = particles.length - 1; i >= 0; i--) {
-        let p = particles[i];
-        p.y += p.vy;
-        p.life--;
-
-        drawPixelRect(p.x, p.y, 5, 5, p.color);
-        drawPixelRect(p.x + 1, p.y - 1, 3, 1, p.color);
-
-        if (p.life <= 0) particles.splice(i, 1);
-      }
-    }
-
-    // SUBTÍTULOS
-    function drawSubtitle(text, speaker = "") {
-      drawFixedPixelRect(20, 190, 440, 72, '#000000');
-      drawFixedPixelRect(22, 192, 436, 68, '#ffffff');
-      drawFixedPixelRect(24, 194, 432, 64, '#0d1117');
-
-      if (speaker) {
-        ctx.fillStyle = '#ff79c6';
-        ctx.font = 'bold 11px monospace';
-        ctx.fillText(speaker, 34, 210);
-      }
-
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '11px monospace';
-      
-      let lines = text.split('\n');
-      lines.forEach((line, index) => {
-        ctx.fillText(line, 34, speaker ? 225 + (index * 13) : 215 + (index * 13));
-      });
-    }
-
-    // BUCLE NARRATIVO CON TIEMPOS MÁXIMOS DE LECTURA (60 FPS = 1 segundo por cada 60 frames)
-    function gameLoop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      frame++;
-
-      drawBackground();
-      drawCat(catX, catY);
-
-      if (state === 0) {
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, true, true, 'normal');
-        drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar la fuga.");
-      }
-      else if (state === 1) {
-        // Inicio de Persecución
-        catShow = true;
-        if (m1X < 240) {
-          m1X += 1.0;
-          m2X += 1.0;
-          catX += 0.95;
-          drawMouse(m1X, mY, true, false, 'run');
-          drawMouse(m2X, mY, true, true, 'run');
-        } else {
-          state = 2;
-          timer = 0;
-        }
-        drawSubtitle("¡RÁPIDO! ¡El gato de la ciudad nos ha visto!", "ÉL:");
-      }
-      else if (state === 2) {
-        // Pausa de escape (~12 segundos)
-        timer++;
-        drawMouse(m1X, mY, true, false, 'scared');
-        drawMouse(m2X, mY, true, true, 'scared');
-
-        drawSubtitle("¡Corre al escondite detrás de la tubería!\n¡No mires atrás!", "ÉL:");
-
-        if (timer > 720) { state = 3; timer = 0; }
-      }
-      else if (state === 3) {
-        // Escapan
-        if (m1X < 500) {
-          m1X += 1.3;
-          m2X += 1.3;
-          catX += 0.5;
-          cameraX += 0.9;
-          drawMouse(m1X, mY, true, false, 'run');
-          drawMouse(m2X, mY, true, true, 'run');
-        } else {
-          catShow = false;
-          state = 4;
-          timer = 0;
-        }
-        drawSubtitle("Logran escabullirse por una grieta estrecha a salvo...");
-      }
-      else if (state === 4) {
-        // Encuentran el Banquete (~14 segundos)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, true, true, 'normal');
-
-        drawSubtitle("Uff... Lo logramos... perdimos al gato.\nY mira esto... jamás había visto tanta comida junta.", "ÉL:");
-
-        if (timer > 840) { state = 5; timer = 0; }
-      }
-      else if (state === 5) {
-        // Admiración de la comida (~14 segundos)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, true, true, 'normal');
-
-        drawSubtitle("Quesos maduros, carne, dulces de panadería...\nEn la ciudad la comida abunda por todas partes.", "ÉL:");
-
-        if (timer > 840) { state = 6; timer = 0; }
-      }
-      else if (state === 6) {
-        // Ella camina ULTRA DESPACIO hacia él
-        drawFeast(550, 175);
-        if (m2X < 485) {
-          m2X += 0.05; // Movimiento imperceptible y dulce
-          drawMouse(m1X, mY, true, false, 'normal');
-          drawMouse(m2X, mY, true, true, 'walk');
-        } else {
-          state = 65;
-          timer = 0;
-        }
-        drawSubtitle("Ella camina pacíficamente hacia él rodeada del banquete...");
-      }
-      else if (state === 65) {
-        // Pausa al llegar (~10 segundos)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, true, true, 'normal');
-
-        drawSubtitle("Ella mira los manjares y luego lo mira con ternura...");
-
-        if (timer > 600) { state = 7; timer = 0; }
-      }
-      else if (state === 7) {
-        // Dialéctica Anime 1 (~16 segundos)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, false, true, 'happy');
-
-        drawSubtitle("Dicen que la rata de ciudad vive una vida corta y peligrosa,\nsiempre huyendo de trampas y gatos a cambio de lujos...", "ELLA:");
-
-        if (timer > 960) { state = 8; timer = 0; }
-      }
-      else if (state === 8) {
-        // Tu frase personalizada (~18 segundos de tiempo de lectura)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, false, true, 'happy');
-
-        drawSubtitle("Es verdad que la vida de una rata de ciudad es corta...\npero quisiera pasar cada segundo de ella a tu lado.", "ELLA:");
-
-        if (timer > 1080) { state = 9; timer = 0; }
-      }
-      else if (state === 9) {
-        // Final Romántico Incondicional (Infinito)
-        timer++;
-        drawFeast(550, 175);
-        drawMouse(m1X, mY, true, false, 'happy');
-        drawMouse(m2X, mY, false, true, 'love');
-
-        if (frame % 10 === 0) {
-          createHeart(m1X + 15, 160);
-        }
-
-        drawSubtitle("No importa qué tan cruel sea la ciudad ni los gatos que acechen,\nmientras estemos juntos, este lugar es perfecto. 💖", "ELLA:");
-      }
-
-      updateParticles();
-      requestAnimationFrame(gameLoop);
-    }
-
-    function startStory() {
-      if (state === 0) {
-        state = 1;
-        m1X = 30;
-        m2X = 5;
-        catX = -120;
-        cameraX = 0;
-        timer = 0;
-      }
-    }
-
-    function resetStory() {
-      state = 0;
-      m1X = 30;
-      m2X = 5;
-      catX = -120;
-      cameraX = 0;
+    if (timer > 85) {
+      animState = 2;
       timer = 0;
-      catShow = false;
-      particles = [];
+    }
+  }
+  else if (animState === 2) {
+    timer++;
+    drawGirl(girlX, 134, false, 'look_cam');
+    drawBoy(boyX, 134, false, 'look_cam');
+
+    if (timer > 75) {
+      animState = 3;
+      timer = 0;
+    }
+  }
+  else if (animState === 3) {
+    if (boyX < 240) {
+      boyX += 1.2;
+    } else {
+      animState = 4;
+      timer = 0;
+    }
+    drawGirl(girlX, 134, false, 'normal');
+    drawBoy(boyX, 134, false, 'normal');
+  }
+  else if (animState === 4) {
+    timer++;
+    doorOpen = true;
+    drawGirl(girlX, 134, false, 'normal');
+    drawBoy(boyX, 134, true, 'normal');
+
+    if (timer > 60) {
+      animState = 5;
+    }
+  }
+  else if (animState === 5) {
+    if (boyX > 210) {
+      boyX -= 1.2;
+    } else {
+      animState = 6;
+      timer = 0;
+    }
+    drawGirl(girlX, 134, false, 'normal');
+    drawBoy(boyX, 134, true, 'normal');
+  }
+  else if (animState === 6) {
+    timer++;
+    drawGirl(girlX, 134, true, 'excited');
+    drawBoy(boyX, 134, true, 'normal');
+    drawSubtitle("¡DEMIAN! 😍", "MAGI:");
+
+    if (timer > 85) {
+      animState = 7;
+      girlX = 186;
+      boyX = 200;
+    }
+  }
+  else if (animState === 7) {
+    drawGirl(girlX, 134, true, 'hug');
+    drawBoy(boyX, 134, true, 'hug');
+
+    drawPixelRect(190, 116, 12, 12, '#ff3344');
+
+    if (frame % 5 === 0) {
+      createHeartParticle(192, 122);
     }
 
-    gameLoop();
-  </script>
+    drawSubtitle("¡Un beso grabado frente a la cámara! 💖");
+  }
+
+  updateAndDrawParticles();
+  requestAnimationFrame(gameLoop);
+}
+
+function startAnimation() {
+  if (animState === 0) {
+    animState = 1;
+    timer = 0;
+  }
+}
+
+function resetAnimation() {
+  animState = 0;
+  girlX = 175;
+  boyX = 210;
+  doorOpen = false;
+  timer = 0;
+  particles = [];
+}
+
+gameLoop();
+
+/* ================================================================
+   RATA DE CAMPO / RATA DE CIUDAD
+   ================================================================ */
+const btnCampo = document.getElementById('btnCampo');
+const btnCiudad = document.getElementById('btnCiudad');
+const choiceNote = document.getElementById('choiceNote');
+const campoGameArea = document.getElementById('campoGameArea');
+const ciudadGameArea = document.getElementById('ciudadGameArea');
+
+let campoLoopStarted = false;
+let ciudadLoopStarted = false;
+
+function showCampoGame(){
+  campoGameArea.style.display = 'flex';
+  ciudadGameArea.style.display = 'none';
+  btnCampo.classList.add('selected');
+  btnCiudad.classList.remove('selected');
+  choiceNote.textContent = '🐭 Aquí va nuestra historia de Rata de Campo...';
+  if(!campoLoopStarted){
+    campoLoopStarted = true;
+    gameLoopCampo();
+  }
+  campoGameArea.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function showCiudadGame(){
+  ciudadGameArea.style.display = 'flex';
+  campoGameArea.style.display = 'none';
+  btnCiudad.classList.add('selected');
+  btnCampo.classList.remove('selected');
+  choiceNote.textContent = '🏙️ Aquí va nuestra historia de Rata de Ciudad...';
+  if(!ciudadLoopStarted){
+    ciudadLoopStarted = true;
+    gameLoopCiudad();
+  }
+  ciudadGameArea.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+btnCampo.addEventListener('click', showCampoGame);
+btnCiudad.addEventListener('click', showCiudadGame);
+
+/* ================================================================
+   MINI-JUEGO: LA RATA DE CAMPO
+   ================================================================ */
+const canvasCampo = document.getElementById('gameCanvasCampo');
+const ctxCampo = canvasCampo.getContext('2d');
+
+let frameCampo = 0;
+let stateCampo = 0;
+let timerCampo = 0;
+let particlesCampo = [];
+
+let cameraXCampo = 0;
+let m1XCampo = -30;
+let m2XCampo = -60;
+let mYCampo = 172;
+let cheeseXCampo = 520;
+
+function drawPixelRectCampo(x, y, w, h, color) {
+  ctxCampo.fillStyle = color;
+  ctxCampo.fillRect(Math.round(x - cameraXCampo), Math.round(y), w, h);
+}
+
+function drawFixedPixelRectCampo(x, y, w, h, color) {
+  ctxCampo.fillStyle = color;
+  ctxCampo.fillRect(Math.round(x), Math.round(y), w, h);
+}
+
+function drawBackgroundCampo() {
+  drawFixedPixelRectCampo(0, 0, 480, 100, '#090c1a');
+  drawFixedPixelRectCampo(0, 100, 480, 50, '#101626');
+  drawFixedPixelRectCampo(0, 150, 480, 40, '#182030');
+
+  let stars = [
+    [25, 20], [70, 45], [120, 15], [180, 35], [240, 10],
+    [300, 50], [370, 25], [430, 40], [200, 65], [340, 75],
+    [450, 15], [90, 75], [150, 50], [280, 25]
+  ];
+  stars.forEach(([sx, sy], i) => {
+    if ((frameCampo + i * 10) % 40 < 28) {
+      drawFixedPixelRectCampo(sx, sy, 2, 2, '#ffffff');
+    }
+  });
+
+  drawFixedPixelRectCampo(390, 15, 28, 28, '#ffb86c');
+  drawFixedPixelRectCampo(386, 20, 36, 18, '#ffb86c');
+
+  for (let i = -100; i < 900; i += 180) {
+    drawPixelRectCampo(i, 130, 140, 60, '#0c121c');
+    drawPixelRectCampo(i + 80, 110, 160, 80, '#090e17');
+  }
+
+  drawFixedPixelRectCampo(0, 180, 480, 90, '#17331c');
+  drawFixedPixelRectCampo(0, 180, 480, 6, '#286338');
+
+  for (let i = -50; i < 900; i += 18) {
+    let wind = Math.sin((frameCampo + i) * 0.04) * 2;
+    drawPixelRectCampo(i, 174, 3, 8, '#50fa7b');
+    drawPixelRectCampo(i + wind, 170, 2, 5, '#50fa7b');
+  }
+
+  let flowers = [[40, 195], [110, 205], [290, 198], [420, 205], [600, 195], [720, 202]];
+  flowers.forEach(([fx, fy]) => {
+    drawPixelRectCampo(fx, fy, 3, 3, '#ff79c6');
+    drawPixelRectCampo(fx + 1, fy - 1, 1, 1, '#ffffff');
+  });
+}
+
+function drawMouseCampo(x, y, isRight = true, isGirl = false, pose = 'normal') {
+  let isMoving = (pose === 'walk');
+  let legOffset = isMoving ? Math.sin(frameCampo * 0.15) * 2.5 : 0;
+  let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frameCampo * 0.12)) * 4 : 0;
+  let actualY = y - happyJump;
+
+  let bodyColor = isGirl ? '#a88b80' : '#8b8c8e';
+  let backColor = isGirl ? '#bc9e92' : '#a2a3a5';
+
+  drawPixelRectCampo(x, actualY, 16, 10, bodyColor);
+  drawPixelRectCampo(x + 2, actualY - 2, 12, 3, backColor);
+
+  let earX = isRight ? x + 2 : x + 10;
+  drawPixelRectCampo(earX, actualY - 6, 5, 5, '#ffb86c');
+  drawPixelRectCampo(earX + 1, actualY - 5, 3, 3, '#ff9999');
+
+  if (isGirl) {
+    drawPixelRectCampo(earX - 2, actualY - 6, 3, 3, '#ff79c6');
+  }
+
+  let headX = isRight ? x + 12 : x - 6;
+  drawPixelRectCampo(headX, actualY + 2, 8, 7, bodyColor);
+
+  let noseX = isRight ? headX + 7 : headX - 1;
+  drawPixelRectCampo(noseX, actualY + 5, 2, 2, '#ff79c6');
+
+  let eyeX = isRight ? headX + 3 : headX + 3;
+  if (pose === 'happy' || pose === 'love') {
+    drawPixelRectCampo(eyeX, actualY + 2, 3, 1, '#000000');
+    drawPixelRectCampo(eyeX - 1, actualY + 3, 1, 2, '#000000');
+    drawPixelRectCampo(eyeX + 3, actualY + 3, 1, 2, '#000000');
+  } else {
+    drawPixelRectCampo(eyeX, actualY + 3, 2, 2, '#000000');
+    drawPixelRectCampo(eyeX, actualY + 3, 1, 1, '#ffffff');
+  }
+
+  let tailX = isRight ? x - 8 : x + 16;
+  drawPixelRectCampo(tailX, actualY + 6, 8, 2, '#e0a0a0');
+  drawPixelRectCampo(isRight ? tailX - 3 : tailX + 8, actualY + 3 + (legOffset * 0.4), 4, 2, '#e0a0a0');
+
+  drawPixelRectCampo(x + 2 + legOffset, actualY + 10, 3, 2, '#555');
+  drawPixelRectCampo(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
+}
+
+function drawFoodCampo(x, y) {
+  drawPixelRectCampo(x, y, 9, 7, '#f1fa8c');
+  drawPixelRectCampo(x + 2, y - 2, 5, 3, '#f1fa8c');
+  drawPixelRectCampo(x + 2, y + 2, 2, 2, '#ffb86c');
+}
+
+function createHeartCampo(x, y) {
+  particlesCampo.push({
+    x: x + (Math.random() * 16 - 8),
+    y: y,
+    vy: -0.3,
+    life: 70,
+    color: Math.random() > 0.3 ? '#ff79c6' : '#ff3366'
+  });
+}
+
+function updateParticlesCampo() {
+  for (let i = particlesCampo.length - 1; i >= 0; i--) {
+    let p = particlesCampo[i];
+    p.y += p.vy;
+    p.life--;
+
+    drawPixelRectCampo(p.x, p.y, 5, 5, p.color);
+    drawPixelRectCampo(p.x + 1, p.y - 1, 3, 1, p.color);
+
+    if (p.life <= 0) particlesCampo.splice(i, 1);
+  }
+}
+
+function drawSubtitleCampo(text, speaker = "") {
+  drawFixedPixelRectCampo(20, 200, 440, 60, '#000000');
+  drawFixedPixelRectCampo(22, 202, 436, 56, '#ffffff');
+  drawFixedPixelRectCampo(24, 204, 432, 52, '#0d1117');
+
+  if (speaker) {
+    ctxCampo.fillStyle = '#50fa7b';
+    ctxCampo.font = 'bold 11px monospace';
+    ctxCampo.fillText(speaker, 36, 220);
+  }
+
+  ctxCampo.fillStyle = '#ffffff';
+  ctxCampo.font = '11px monospace';
+
+  let lines = text.split('\n');
+  lines.forEach((line, index) => {
+    ctxCampo.fillText(line, 36, speaker ? 234 + (index * 13) : 224 + (index * 13));
+  });
+}
+
+function gameLoopCampo() {
+  ctxCampo.clearRect(0, 0, canvasCampo.width, canvasCampo.height);
+  frameCampo++;
+
+  drawBackgroundCampo();
+  drawFoodCampo(cheeseXCampo, 176);
+
+  if (stateCampo === 0) {
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, true, true, 'normal');
+    drawSubtitleCampo("Haz clic en 'Iniciar Historia' para comenzar.");
+  }
+  else if (stateCampo === 1) {
+    if (m1XCampo < 180) {
+      m1XCampo += 0.4;
+      m2XCampo += 0.4;
+      drawMouseCampo(m1XCampo, mYCampo, true, false, 'walk');
+      drawMouseCampo(m2XCampo, mYCampo, true, true, 'walk');
+    } else {
+      stateCampo = 2;
+      timerCampo = 0;
+    }
+    drawSubtitleCampo("Buscando algo de comer en la inmensidad de la noche...");
+  }
+  else if (stateCampo === 2) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, true, true, 'normal');
+
+    drawSubtitleCampo("Llevamos mucho tiempo buscando...\nLa comida no abunda por aquí.", "ÉL:");
+
+    if (timerCampo > 400) { stateCampo = 3; timerCampo = 0; }
+  }
+  else if (stateCampo === 3) {
+    if (m1XCampo < 490) {
+      m1XCampo += 0.4;
+      m2XCampo += 0.4;
+      cameraXCampo += 0.28;
+      drawMouseCampo(m1XCampo, mYCampo, true, false, 'walk');
+      drawMouseCampo(m2XCampo, mYCampo, true, true, 'walk');
+    } else {
+      stateCampo = 4;
+      timerCampo = 0;
+    }
+    drawSubtitleCampo("Siguen recorriendo la hierba bajo las estrellas...");
+  }
+  else if (stateCampo === 4) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, true, true, 'normal');
+
+    drawSubtitleCampo("¡Mira! Encontré un pedacito de queso...", "ÉL:");
+
+    if (timerCampo > 450) { stateCampo = 5; timerCampo = 0; }
+  }
+  else if (stateCampo === 5) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, true, true, 'normal');
+
+    drawSubtitleCampo("Sé que es muy poco, pero quiero que te lo quedes tú.\nNecesitas comer algo.", "ÉL:");
+
+    if (timerCampo > 500) { stateCampo = 6; timerCampo = 0; }
+  }
+  else if (stateCampo === 6) {
+    if (m2XCampo < 475) {
+      m2XCampo += 0.12;
+      drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+      drawMouseCampo(m2XCampo, mYCampo, true, true, 'walk');
+    } else {
+      stateCampo = 65;
+      timerCampo = 0;
+    }
+    drawSubtitleCampo("Ella se acerca a él dulcemente...");
+  }
+  else if (stateCampo === 65) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, true, true, 'normal');
+
+    drawSubtitleCampo("Ella se acerca a él dulcemente...");
+
+    if (timerCampo > 350) { stateCampo = 7; timerCampo = 0; }
+  }
+  else if (stateCampo === 7) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, false, true, 'happy');
+
+    drawSubtitleCampo("No me importa que tengamos poca comida...", "ELLA:");
+
+    if (timerCampo > 600) { stateCampo = 8; timerCampo = 0; }
+  }
+  else if (stateCampo === 8) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'normal');
+    drawMouseCampo(m2XCampo, mYCampo, false, true, 'happy');
+
+    drawSubtitleCampo("La rata de campo vive libre aunque tenga poco que comer.\nSin trampas, sin gatos y sin miedo.", "ELLA:");
+
+    if (timerCampo > 700) { stateCampo = 9; timerCampo = 0; }
+  }
+  else if (stateCampo === 9) {
+    timerCampo++;
+    drawMouseCampo(m1XCampo, mYCampo, true, false, 'happy');
+    drawMouseCampo(m2XCampo, mYCampo, false, true, 'love');
+
+    if (frameCampo % 10 === 0) {
+      createHeartCampo(m1XCampo + 15, 160);
+    }
+
+    drawSubtitleCampo("En un mundo donde tengamos poco o mucho...\nyo siempre elegiría estar contigo. 💖", "ELLA:");
+  }
+
+  updateParticlesCampo();
+  requestAnimationFrame(gameLoopCampo);
+}
+
+function startStoryCampo() {
+  if (stateCampo === 0) {
+    stateCampo = 1;
+    m1XCampo = 40;
+    m2XCampo = 10;
+    cameraXCampo = 0;
+    timerCampo = 0;
+  }
+}
+
+function resetStoryCampo() {
+  stateCampo = 0;
+  m1XCampo = 40;
+  m2XCampo = 10;
+  cameraXCampo = 0;
+  timerCampo = 0;
+  particlesCampo = [];
+}
+
+/* ================================================================
+   MINI-JUEGO: LA RATA DE CIUDAD
+   ================================================================ */
+const canvasCiudad = document.getElementById('gameCanvasCiudad');
+const ctxCiudad = canvasCiudad.getContext('2d');
+
+let frameCiudad = 0;
+let stateCiudad = 0;
+let timerCiudad = 0;
+let particlesCiudad = [];
+
+let cameraXCiudad = 0;
+let m1XCiudad = 30;
+let m2XCiudad = 5;
+let mYCiudad = 172;
+
+let catXCiudad = -120;
+let catYCiudad = 145;
+let catShowCiudad = false;
+
+function drawPixelRectCiudad(x, y, w, h, color) {
+  ctxCiudad.fillStyle = color;
+  ctxCiudad.fillRect(Math.round(x - cameraXCiudad), Math.round(y), w, h);
+}
+
+function drawFixedPixelRectCiudad(x, y, w, h, color) {
+  ctxCiudad.fillStyle = color;
+  ctxCiudad.fillRect(Math.round(x), Math.round(y), w, h);
+}
+
+function drawBackgroundCiudad() {
+  drawFixedPixelRectCiudad(0, 0, 480, 180, '#0a0914');
+  drawFixedPixelRectCiudad(0, 100, 480, 80, '#121024');
+
+  for (let i = -100; i < 900; i += 70) {
+    drawPixelRectCiudad(i, 20, 60, 160, '#1a1829');
+    for (let wy = 30; wy < 150; wy += 20) {
+      if ((i + wy) % 3 === 0) {
+        drawPixelRectCiudad(i + 10, wy, 8, 12, '#ffb86c');
+        drawPixelRectCiudad(i + 35, wy, 8, 12, '#8be9fd');
+      }
+    }
+  }
+
+  drawPixelRectCiudad(-150, 0, 120, 180, '#0f0d1a');
+  drawPixelRectCiudad(300, 0, 150, 180, '#0f0d1a');
+  drawPixelRectCiudad(650, 0, 200, 180, '#0f0d1a');
+
+  drawFixedPixelRectCiudad(0, 180, 480, 90, '#1c1b29');
+  drawFixedPixelRectCiudad(0, 180, 480, 4, '#383552');
+
+  drawPixelRectCiudad(120, 140, 30, 40, '#282a36');
+  drawPixelRectCiudad(280, 150, 25, 30, '#44475a');
+
+  drawPixelRectCiudad(80, 182, 40, 2, '#ff79c6');
+  drawPixelRectCiudad(240, 182, 50, 2, '#bd93f9');
+  drawPixelRectCiudad(480, 182, 60, 2, '#50fa7b');
+}
+
+function drawCatCiudad(x, y) {
+  if (!catShowCiudad) return;
+
+  drawPixelRectCiudad(x, y + 10, 40, 20, '#111116');
+  drawPixelRectCiudad(x + 32, y + 2, 22, 20, '#111116');
+  drawPixelRectCiudad(x + 34, y - 6, 6, 8, '#111116');
+  drawPixelRectCiudad(x + 46, y - 6, 6, 8, '#111116');
+  drawPixelRectCiudad(x + 42, y + 8, 4, 5, '#f1fa8c');
+  drawPixelRectCiudad(x + 50, y + 8, 4, 5, '#f1fa8c');
+  drawPixelRectCiudad(x + 44, y + 9, 1, 3, '#000000');
+  drawPixelRectCiudad(x + 52, y + 9, 1, 3, '#000000');
+
+  let tailWiggle = Math.sin(frameCiudad * 0.2) * 4;
+  drawPixelRectCiudad(x - 12, y + 8 + tailWiggle, 14, 4, '#111116');
+  let leg = Math.sin(frameCiudad * 0.4) * 6;
+  drawPixelRectCiudad(x + 5 + leg, y + 30, 6, 8, '#111116');
+  drawPixelRectCiudad(x + 28 - leg, y + 30, 6, 8, '#111116');
+}
+
+function drawMouseCiudad(x, y, isRight = true, isGirl = false, pose = 'normal') {
+  let isMoving = (pose === 'walk' || pose === 'run');
+  let speedMult = (pose === 'run') ? 0.25 : 0.1;
+  let legOffset = isMoving ? Math.sin(frameCiudad * speedMult) * 3 : 0;
+  let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frameCiudad * 0.12)) * 4 : 0;
+  let actualY = y - happyJump;
+
+  let bodyColor = isGirl ? '#a88b80' : '#8b8c8e';
+  let backColor = isGirl ? '#bc9e92' : '#a2a3a5';
+
+  drawPixelRectCiudad(x, actualY, 16, 10, bodyColor);
+  drawPixelRectCiudad(x + 2, actualY - 2, 12, 3, backColor);
+
+  let earX = isRight ? x + 2 : x + 10;
+  drawPixelRectCiudad(earX, actualY - 6, 5, 5, '#ffb86c');
+  drawPixelRectCiudad(earX + 1, actualY - 5, 3, 3, '#ff9999');
+
+  if (isGirl) {
+    drawPixelRectCiudad(earX - 2, actualY - 6, 3, 3, '#ff79c6');
+  }
+
+  let headX = isRight ? x + 12 : x - 6;
+  drawPixelRectCiudad(headX, actualY + 2, 8, 7, bodyColor);
+
+  let noseX = isRight ? headX + 7 : headX - 1;
+  drawPixelRectCiudad(noseX, actualY + 5, 2, 2, '#ff79c6');
+
+  let eyeX = isRight ? headX + 3 : headX + 3;
+  if (pose === 'happy' || pose === 'love') {
+    drawPixelRectCiudad(eyeX, actualY + 2, 3, 1, '#000000');
+    drawPixelRectCiudad(eyeX - 1, actualY + 3, 1, 2, '#000000');
+    drawPixelRectCiudad(eyeX + 3, actualY + 3, 1, 2, '#000000');
+  } else if (pose === 'scared') {
+    drawPixelRectCiudad(eyeX, actualY + 2, 3, 3, '#ffffff');
+    drawPixelRectCiudad(eyeX + 1, actualY + 3, 1, 1, '#000000');
+  } else {
+    drawPixelRectCiudad(eyeX, actualY + 3, 2, 2, '#000000');
+    drawPixelRectCiudad(eyeX, actualY + 3, 1, 1, '#ffffff');
+  }
+
+  let tailX = isRight ? x - 8 : x + 16;
+  drawPixelRectCiudad(tailX, actualY + 6, 8, 2, '#e0a0a0');
+  drawPixelRectCiudad(isRight ? tailX - 3 : tailX + 8, actualY + 3 + (legOffset * 0.4), 4, 2, '#e0a0a0');
+
+  drawPixelRectCiudad(x + 2 + legOffset, actualY + 10, 3, 2, '#555');
+  drawPixelRectCiudad(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
+}
+
+function drawFeastCiudad(x, y) {
+  drawPixelRectCiudad(x, y - 5, 18, 14, '#f1fa8c');
+  drawPixelRectCiudad(x + 4, y - 9, 10, 5, '#f1fa8c');
+  drawPixelRectCiudad(x + 4, y, 4, 4, '#ffb86c');
+
+  drawPixelRectCiudad(x + 22, y - 2, 16, 10, '#ff5555');
+  drawPixelRectCiudad(x + 24, y - 4, 12, 3, '#ff79c6');
+  drawPixelRectCiudad(x + 22, y - 2, 3, 10, '#ffffff');
+
+  drawPixelRectCiudad(x + 42, y + 1, 12, 7, '#ffb86c');
+  drawPixelRectCiudad(x + 44, y - 1, 8, 3, '#ff79c6');
+}
+
+function createHeartCiudad(x, y) {
+  particlesCiudad.push({
+    x: x + (Math.random() * 16 - 8),
+    y: y,
+    vy: -0.3,
+    life: 70,
+    color: Math.random() > 0.3 ? '#ff79c6' : '#bd93f9'
+  });
+}
+
+function updateParticlesCiudad() {
+  for (let i = particlesCiudad.length - 1; i >= 0; i--) {
+    let p = particlesCiudad[i];
+    p.y += p.vy;
+    p.life--;
+
+    drawPixelRectCiudad(p.x, p.y, 5, 5, p.color);
+    drawPixelRectCiudad(p.x + 1, p.y - 1, 3, 1, p.color);
+
+    if (p.life <= 0) particlesCiudad.splice(i, 1);
+  }
+}
+
+function drawSubtitleCiudad(text, speaker = "") {
+  drawFixedPixelRectCiudad(20, 190, 440, 72, '#000000');
+  drawFixedPixelRectCiudad(22, 192, 436, 68, '#ffffff');
+  drawFixedPixelRectCiudad(24, 194, 432, 64, '#0d1117');
+
+  if (speaker) {
+    ctxCiudad.fillStyle = '#ff79c6';
+    ctxCiudad.font = 'bold 11px monospace';
+    ctxCiudad.fillText(speaker, 34, 210);
+  }
+
+  ctxCiudad.fillStyle = '#ffffff';
+  ctxCiudad.font = '11px monospace';
+
+  let lines = text.split('\n');
+  lines.forEach((line, index) => {
+    ctxCiudad.fillText(line, 34, speaker ? 225 + (index * 13) : 215 + (index * 13));
+  });
+}
+
+function gameLoopCiudad() {
+  ctxCiudad.clearRect(0, 0, canvasCiudad.width, canvasCiudad.height);
+  frameCiudad++;
+
+  drawBackgroundCiudad();
+  drawCatCiudad(catXCiudad, catYCiudad);
+
+  if (stateCiudad === 0) {
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'normal');
+    drawSubtitleCiudad("Haz clic en 'Iniciar Historia' para comenzar la fuga.");
+  }
+  else if (stateCiudad === 1) {
+    catShowCiudad = true;
+    if (m1XCiudad < 240) {
+      m1XCiudad += 1.0;
+      m2XCiudad += 1.0;
+      catXCiudad += 0.95;
+      drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'run');
+      drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'run');
+    } else {
+      stateCiudad = 2;
+      timerCiudad = 0;
+    }
+    drawSubtitleCiudad("¡RÁPIDO! ¡El gato de la ciudad nos ha visto!", "ÉL:");
+  }
+  else if (stateCiudad === 2) {
+    timerCiudad++;
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'scared');
+    drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'scared');
+
+    drawSubtitleCiudad("¡Corre al escondite detrás de la tubería!\n¡No mires atrás!", "ÉL:");
+
+    if (timerCiudad > 720) { stateCiudad = 3; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 3) {
+    if (m1XCiudad < 500) {
+      m1XCiudad += 1.3;
+      m2XCiudad += 1.3;
+      catXCiudad += 0.5;
+      cameraXCiudad += 0.9;
+      drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'run');
+      drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'run');
+    } else {
+      catShowCiudad = false;
+      stateCiudad = 4;
+      timerCiudad = 0;
+    }
+    drawSubtitleCiudad("Logran escabullirse por una grieta estrecha a salvo...");
+  }
+  else if (stateCiudad === 4) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'normal');
+
+    drawSubtitleCiudad("Uff... Lo logramos... perdimos al gato.\nY mira esto... jamás había visto tanta comida junta.", "ÉL:");
+
+    if (timerCiudad > 840) { stateCiudad = 5; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 5) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'normal');
+
+    drawSubtitleCiudad("Quesos maduros, carne, dulces de panadería...\nEn la ciudad la comida abunda por todas partes.", "ÉL:");
+
+    if (timerCiudad > 840) { stateCiudad = 6; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 6) {
+    drawFeastCiudad(550, 175);
+    if (m2XCiudad < 485) {
+      m2XCiudad += 0.05;
+      drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+      drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'walk');
+    } else {
+      stateCiudad = 65;
+      timerCiudad = 0;
+    }
+    drawSubtitleCiudad("Ella camina pacíficamente hacia él rodeada del banquete...");
+  }
+  else if (stateCiudad === 65) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, true, true, 'normal');
+
+    drawSubtitleCiudad("Ella mira los manjares y luego lo mira con ternura...");
+
+    if (timerCiudad > 600) { stateCiudad = 7; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 7) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, false, true, 'happy');
+
+    drawSubtitleCiudad("Dicen que la rata de ciudad vive una vida corta y peligrosa,\nsiempre huyendo de trampas y gatos a cambio de lujos...", "ELLA:");
+
+    if (timerCiudad > 960) { stateCiudad = 8; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 8) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'normal');
+    drawMouseCiudad(m2XCiudad, mYCiudad, false, true, 'happy');
+
+    drawSubtitleCiudad("Es verdad que la vida de una rata de ciudad es corta...\npero quisiera pasar cada segundo de ella a tu lado.", "ELLA:");
+
+    if (timerCiudad > 1080) { stateCiudad = 9; timerCiudad = 0; }
+  }
+  else if (stateCiudad === 9) {
+    timerCiudad++;
+    drawFeastCiudad(550, 175);
+    drawMouseCiudad(m1XCiudad, mYCiudad, true, false, 'happy');
+    drawMouseCiudad(m2XCiudad, mYCiudad, false, true, 'love');
+
+    if (frameCiudad % 10 === 0) {
+      createHeartCiudad(m1XCiudad + 15, 160);
+    }
+
+    drawSubtitleCiudad("No importa qué tan cruel sea la ciudad ni los gatos que acechen,\nmientras estemos juntos, este lugar es perfecto. 💖", "ELLA:");
+  }
+
+  updateParticlesCiudad();
+  requestAnimationFrame(gameLoopCiudad);
+}
+
+function startStoryCiudad() {
+  if (stateCiudad === 0) {
+    stateCiudad = 1;
+    m1XCiudad = 30;
+    m2XCiudad = 5;
+    catXCiudad = -120;
+    cameraXCiudad = 0;
+    timerCiudad = 0;
+  }
+}
+
+function resetStoryCiudad() {
+  stateCiudad = 0;
+  m1XCiudad = 30;
+  m2XCiudad = 5;
+  catXCiudad = -120;
+  cameraXCiudad = 0;
+  timerCiudad = 0;
+  catShowCiudad = false;
+  particlesCiudad = [];
+}
+
+</script>
 </body>
 </html>
