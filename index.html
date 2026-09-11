@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rata de Campo - Historia de Amor Extendida 8-Bits</title>
+  <title>Rata de Campo - Lectura Ultra Tranquila 8-Bits</title>
   <style>
     body {
       background-color: #050608;
@@ -69,7 +69,7 @@
 </head>
 <body>
 
-  <h1>[ LA RATA DE CAMPO - EDICIÓN MÁS LENTA ]</h1>
+  <h1>[ LA RATA DE CAMPO - TIEMPO EXTENDIDO ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
@@ -177,7 +177,7 @@
       drawPixelRect(earX, actualY - 6, 5, 5, '#ffb86c');
       drawPixelRect(earX + 1, actualY - 5, 3, 3, '#ff9999');
 
-      // Flor en la oreja
+      // Flor en la oreja de ella
       if (isGirl) {
         drawPixelRect(earX - 2, actualY - 6, 3, 3, '#ff79c6');
       }
@@ -218,7 +218,7 @@
       drawPixelRect(x + 2, y + 2, 2, 2, '#ffb86c');
     }
 
-    // PARTÍCULAS
+    // PARTÍCULAS DE CORAZONES
     function createHeart(x, y) {
       particles.push({
         x: x + (Math.random() * 16 - 8),
@@ -263,7 +263,7 @@
       });
     }
 
-    // BUCLE NARRATIVO PAUSADO
+    // BUCLE NARRATIVO CON TIEMPOS MUCHO MÁS LARGOS
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
@@ -278,7 +278,7 @@
         drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar.");
       }
       else if (state === 1) {
-        // Caminata suave
+        // Caminata suave inicial
         if (m1X < 180) {
           m1X += 0.4;
           m2X += 0.4;
@@ -291,14 +291,14 @@
         drawSubtitle("Buscando algo de comer en la inmensidad de la noche...");
       }
       else if (state === 2) {
-        // Pausa conversacional (300 frames ≈ 5 segundos)
+        // Pausa conversacional (400 frames ≈ 6.5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
         drawSubtitle("Llevamos mucho tiempo buscando...\nLa comida no abunda por aquí.", "ÉL:");
 
-        if (timer > 300) { state = 3; timer = 0; }
+        if (timer > 400) { state = 3; timer = 0; }
       }
       else if (state === 3) {
         // Segunda caminata
@@ -315,27 +315,27 @@
         drawSubtitle("Siguen recorriendo la hierba bajo las estrellas...");
       }
       else if (state === 4) {
-        // Encuentran el queso (300 frames ≈ 5 segundos)
+        // Encuentran el queso (450 frames ≈ 7.5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
         drawSubtitle("¡Mira! Encontré un pedacito de queso...", "ÉL:");
 
-        if (timer > 300) { state = 5; timer = 0; }
+        if (timer > 450) { state = 5; timer = 0; }
       }
       else if (state === 5) {
-        // Ofrece el queso (350 frames ≈ 6 segundos)
+        // Ofrece el queso (500 frames ≈ 8.3 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
         drawSubtitle("Sé que es muy poco, pero quiero que te lo quedes tú.\nNecesitas comer algo.", "ÉL:");
 
-        if (timer > 350) { state = 6; timer = 0; }
+        if (timer > 500) { state = 6; timer = 0; }
       }
       else if (state === 6) {
-        // Ella camina
+        // Ella camina despacio hacia él
         if (m2X < 475) {
           m2X += 0.3;
           drawMouse(m1X, mY, true, false, 'normal');
@@ -347,27 +347,27 @@
         drawSubtitle("Ella se acerca a él dulcemente...");
       }
       else if (state === 7) {
-        // Filosofía 1 (300 frames ≈ 5 segundos)
+        // Filosofía 1 (Aumentado a 600 frames ≈ 10 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
         drawSubtitle("No me importa que tengamos poca comida...", "ELLA:");
 
-        if (timer > 300) { state = 8; timer = 0; }
+        if (timer > 600) { state = 8; timer = 0; }
       }
       else if (state === 8) {
-        // Filosofía 2 (380 frames ≈ 6.5 segundos)
+        // Filosofía 2 (Aumentado a 700 frames ≈ 11.5 segundos)
         timer++;
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
         drawSubtitle("La rata de campo vive libre aunque tenga poco que comer.\nSin trampas, sin gatos y sin miedo.", "ELLA:");
 
-        if (timer > 380) { state = 9; timer = 0; }
+        if (timer > 700) { state = 9; timer = 0; }
       }
       else if (state === 9) {
-        // Final romántico
+        // Final romántico que se mantiene de forma indefinida
         timer++;
         drawMouse(m1X, mY, true, false, 'happy');
         drawMouse(m2X, mY, false, true, 'love');
