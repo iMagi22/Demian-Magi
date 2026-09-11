@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rata de Campo - Chainsaw Man Metaphor</title>
+  <title>Rata de Campo - Historia de Amor 8-Bits</title>
   <style>
     body {
       background-color: #050608;
@@ -57,8 +57,8 @@
     }
 
     button:hover {
-      background: #8be9fd;
-      color: #000;
+      background: #ff79c6;
+      color: #fff;
     }
 
     button:active {
@@ -69,22 +69,22 @@
 </head>
 <body>
 
-  <h1>[ RATA DE CAMPO - CHAINSAW MAN ]</h1>
+  <h1>[ LA RATA DE CAMPO ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
   </div>
 
   <div class="controls">
-    <button onclick="startStory()">▶ Ver Historia</button>
-    <button onclick="resetStory()">↺ Reiniciar</button>
+    <button onclick="startStory()">▶ Iniciar Historia</button>
+    <button onclick="resetStory()">↺ Reiniciar Escena</button>
   </div>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Escalado de pantalla
+    // Escalado
     canvas.style.width = (canvas.width * 2.3) + 'px';
     canvas.style.height = (canvas.height * 2.3) + 'px';
 
@@ -93,117 +93,135 @@
     let timer = 0;
     let particles = [];
 
+    // Posiciones iniciales (Caminata larga)
+    let m1X = 40;
+    let m2X = 15;
+    let mY = 172;
+    let showCheese = false;
+
     function drawPixelRect(x, y, w, h, color) {
       ctx.fillStyle = color;
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // FONDO: CAMPO NOCTURNO Y PACÍFICO
+    // FONDO: CAMPO NOCTURNO PACÍFICO Y HERMOSO
     function drawBackground() {
       // Cielo Nocturno
-      drawPixelRect(0, 0, 480, 100, '#0a0d1d');
-      drawPixelRect(0, 100, 480, 50, '#111827');
-      drawPixelRect(0, 150, 480, 40, '#1a2332');
+      drawPixelRect(0, 0, 480, 100, '#090c1a');
+      drawPixelRect(0, 100, 480, 50, '#101626');
+      drawPixelRect(0, 150, 480, 40, '#182030');
 
-      // Estrellas
+      // Estrellas titilantes
       let stars = [
-        [30, 20], [80, 45], [130, 15], [190, 35], [250, 10], 
-        [310, 50], [380, 25], [440, 40], [210, 65], [350, 75]
+        [25, 20], [70, 45], [120, 15], [180, 35], [240, 10], 
+        [300, 50], [370, 25], [430, 40], [200, 65], [340, 75],
+        [450, 15], [90, 75], [150, 50], [280, 25]
       ];
       stars.forEach(([sx, sy], i) => {
-        if ((frame + i * 12) % 40 < 28) {
-          drawPixelRect(sx, sy, 2, 2, '#f1fa8c');
+        if ((frame + i * 10) % 40 < 28) {
+          drawPixelRect(sx, sy, 2, 2, '#ffffff');
         }
       });
 
-      // Luna Llena en el Campo
-      drawPixelRect(390, 15, 30, 30, '#ffb86c');
-      drawPixelRect(386, 20, 38, 20, '#ffb86c');
+      // Luna de Campo
+      drawPixelRect(390, 15, 28, 28, '#ffb86c');
+      drawPixelRect(386, 20, 36, 18, '#ffb86c');
 
-      // Montañas al fondo
-      drawPixelRect(0, 130, 120, 60, '#0d1520');
-      drawPixelRect(80, 110, 150, 80, '#0a1018');
-      drawPixelRect(200, 125, 180, 65, '#0d1520');
-      drawPixelRect(350, 105, 130, 85, '#0a1018');
+      // Siluetas de Montañas lejanas
+      drawPixelRect(0, 130, 140, 60, '#0c121c');
+      drawPixelRect(90, 110, 160, 80, '#090e17');
+      drawPixelRect(220, 125, 170, 65, '#0c121c');
+      drawPixelRect(340, 105, 140, 85, '#090e17');
 
       // Suelo de Hierba
-      drawPixelRect(0, 180, 480, 90, '#1b3a21');
-      drawPixelRect(0, 180, 480, 6, '#2e6f40');
+      drawPixelRect(0, 180, 480, 90, '#17331c');
+      drawPixelRect(0, 180, 480, 6, '#286338');
 
-      // Briznas de Pasto Animadas por el viento
-      for (let i = 10; i < 480; i += 22) {
-        let wind = Math.sin((frame + i) * 0.05) * 2;
+      // Briznas de Pasto Animadas por la brisa
+      for (let i = 8; i < 480; i += 18) {
+        let wind = Math.sin((frame + i) * 0.04) * 2;
         drawPixelRect(i, 174, 3, 8, '#50fa7b');
         drawPixelRect(i + wind, 170, 2, 5, '#50fa7b');
       }
 
-      // Pequeñas flores de campo
-      let flowers = [[50, 195], [120, 205], [320, 198], [410, 205], [260, 202]];
+      // Flores silvestre de campo
+      let flowers = [[40, 195], [110, 205], [290, 198], [420, 205], [230, 202]];
       flowers.forEach(([fx, fy]) => {
         drawPixelRect(fx, fy, 3, 3, '#ff79c6');
         drawPixelRect(fx + 1, fy - 1, 1, 1, '#ffffff');
       });
     }
 
-    // DIBUJAR RATA DE CAMPO (8-Bits)
-    function drawMouse(x, y, isRight = false, isHappy = false) {
-      let dir = isRight ? 1 : -1;
+    // DIBUJAR RATA DE CAMPO
+    function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
+      let isMoving = (pose === 'walk');
+      let legOffset = isMoving ? Math.sin(frame * 0.3) * 2 : 0;
+      let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.2)) * 4 : 0;
+      let actualY = y - happyJump;
+
+      // Color base (Él es más grisáceo, Ella tiene un tono más cálido y un moño/detalle)
+      let bodyColor = isGirl ? '#a88b80' : '#8b8c8e';
+      let backColor = isGirl ? '#bc9e92' : '#a2a3a5';
 
       // Cuerpo
-      drawPixelRect(x, y, 16, 10, '#8b8c8e');
-      drawPixelRect(x + 2, y - 2, 12, 3, '#a2a3a5'); // Espalda
+      drawPixelRect(x, actualY, 16, 10, bodyColor);
+      drawPixelRect(x + 2, actualY - 2, 12, 3, backColor);
 
-      // Orejas grandes y tiernas
+      // Orejas grandes de campo
       let earX = isRight ? x + 2 : x + 10;
-      drawPixelRect(earX, y - 6, 5, 5, '#ffb86c');
-      drawPixelRect(earX + 1, y - 5, 3, 3, '#ff9999');
+      drawPixelRect(earX, actualY - 6, 5, 5, '#ffb86c');
+      drawPixelRect(earX + 1, actualY - 5, 3, 3, '#ff9999');
 
-      // Cabeza / Hocico
+      // Detalle de Ella: Flor en la oreja
+      if (isGirl) {
+        drawPixelRect(earX - 2, actualY - 6, 3, 3, '#ff79c6');
+      }
+
+      // Cabeza
       let headX = isRight ? x + 12 : x - 6;
-      drawPixelRect(headX, y + 2, 8, 7, '#8b8c8e');
+      drawPixelRect(headX, actualY + 2, 8, 7, bodyColor);
       
       // Nariz rosada
       let noseX = isRight ? headX + 7 : headX - 1;
-      drawPixelRect(noseX, y + 5, 2, 2, '#ff79c6');
+      drawPixelRect(noseX, actualY + 5, 2, 2, '#ff79c6');
 
-      // Ojo expresivo
+      // Ojos expresivos
       let eyeX = isRight ? headX + 3 : headX + 3;
-      if (isHappy) {
+      if (pose === 'happy' || pose === 'love') {
         // Ojo de felicidad (^ ^)
-        drawPixelRect(eyeX, y + 2, 3, 1, '#000000');
-        drawPixelRect(eyeX - 1, y + 3, 1, 2, '#000000');
-        drawPixelRect(eyeX + 3, y + 3, 1, 2, '#000000');
+        drawPixelRect(eyeX, actualY + 2, 3, 1, '#000000');
+        drawPixelRect(eyeX - 1, actualY + 3, 1, 2, '#000000');
+        drawPixelRect(eyeX + 3, actualY + 3, 1, 2, '#000000');
       } else {
-        drawPixelRect(eyeX, y + 3, 2, 2, '#000000');
-        drawPixelRect(eyeX, y + 3, 1, 1, '#ffffff'); // brillo
+        drawPixelRect(eyeX, actualY + 3, 2, 2, '#000000');
+        drawPixelRect(eyeX, actualY + 3, 1, 1, '#ffffff');
       }
 
-      // Cola larga curbeada
+      // Cola Larga Curva
       let tailX = isRight ? x - 8 : x + 16;
-      drawPixelRect(tailX, y + 6, 8, 2, '#e0a0a0');
-      drawPixelRect(isRight ? tailX - 3 : tailX + 8, y + 3, 4, 2, '#e0a0a0');
+      drawPixelRect(tailX, actualY + 6, 8, 2, '#e0a0a0');
+      drawPixelRect(isRight ? tailX - 3 : tailX + 8, actualY + 3 + (legOffset * 0.5), 4, 2, '#e0a0a0');
 
-      // Patitas
-      drawPixelRect(x + 2, y + 10, 3, 2, '#666');
-      drawPixelRect(x + 11, y + 10, 3, 2, '#666');
+      // Patitas animadas
+      drawPixelRect(x + 2 + legOffset, actualY + 10, 3, 2, '#555');
+      drawPixelRect(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
     }
 
-    // POCA COMIDA: UN PEQUEÑO TROZO DE QUESO
+    // POCA COMIDA: PEDACITO DE QUESO
     function drawFood(x, y) {
-      drawPixelRect(x, y, 10, 8, '#f1fa8c');
-      drawPixelRect(x + 2, y - 2, 6, 3, '#f1fa8c');
-      drawPixelRect(x + 3, y + 2, 2, 2, '#ffb86c'); // Agujerito del queso
-      drawPixelRect(x + 7, y + 4, 2, 2, '#ffb86c');
+      drawPixelRect(x, y, 9, 7, '#f1fa8c');
+      drawPixelRect(x + 2, y - 2, 5, 3, '#f1fa8c');
+      drawPixelRect(x + 2, y + 2, 2, 2, '#ffb86c'); // Agujerito
     }
 
     // PARTÍCULAS DE AMOR
     function createHeart(x, y) {
       particles.push({
-        x: x + (Math.random() * 20 - 10),
+        x: x + (Math.random() * 16 - 8),
         y: y,
-        vy: -0.6,
+        vy: -0.5,
         life: 50,
-        color: '#ff79c6'
+        color: Math.random() > 0.3 ? '#ff79c6' : '#ff3366'
       });
     }
 
@@ -220,77 +238,112 @@
       }
     }
 
-    // CAJA DE SUBTÍTULOS
+    // CAJA DE SUBTÍTULOS REFINADA
     function drawSubtitle(text, speaker = "") {
-      drawPixelRect(30, 205, 420, 55, '#000000');
-      drawPixelRect(32, 207, 416, 51, '#ffffff');
-      drawPixelRect(34, 209, 412, 47, '#0d1117');
+      drawPixelRect(20, 202, 440, 58, '#000000');
+      drawPixelRect(22, 204, 436, 54, '#ffffff');
+      drawPixelRect(24, 206, 432, 50, '#0d1117');
 
       if (speaker) {
-        ctx.fillStyle = '#ff79c6';
+        ctx.fillStyle = '#50fa7b';
         ctx.font = 'bold 11px monospace';
-        ctx.fillText(speaker, 46, 224);
+        ctx.fillText(speaker, 36, 222);
       }
 
       ctx.fillStyle = '#ffffff';
       ctx.font = '11px monospace';
       
-      // Ajuste de texto multi-línea básico
       let lines = text.split('\n');
       lines.forEach((line, index) => {
-        ctx.fillText(line, 46, speaker ? 238 + (index * 13) : 228 + (index * 13));
+        ctx.fillText(line, 36, speaker ? 236 + (index * 13) : 226 + (index * 13));
       });
     }
 
-    // BUCLE PRINCIPAL
+    // BUCLE NARRATIVO EXTENDIDO
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
 
       drawBackground();
 
-      let mouse1X = 190;
-      let mouse2X = 230;
-      let mouseY = 172;
+      if (showCheese) {
+        drawFood(240, 176);
+      }
 
+      // ESTADOS DE LA HISTORIA
       if (state === 0) {
-        // Inicio
-        drawMouse(mouse1X, mouseY, true, false);
-        drawMouse(mouse2X, mouseY, false, false);
-        drawFood(215, 176);
-        drawSubtitle("¿Prefieres ser la rata de ciudad o la rata de campo?", "REZE:");
-      } 
+        // Inicio quieto
+        drawMouse(m1X, mY, true, false, 'normal');
+        drawMouse(m2X, mY, true, true, 'normal');
+        drawSubtitle("Presiona 'Iniciar Historia' para comenzar la escena.");
+      }
       else if (state === 1) {
-        timer++;
-        drawMouse(mouse1X, mouseY, true, false);
-        drawMouse(mouse2X, mouseY, false, false);
-        drawFood(215, 176);
-        drawSubtitle("La rata de campo vive en paz y seguridad,\nsin temor a los gatos ni al peligro...", "REZE (CSM):");
-
-        if (timer > 110) { state = 2; timer = 0; }
-      } 
+        // Escena 1: Caminando juntos a buscar comida
+        if (m1X < 190) {
+          m1X += 0.8;
+          m2X += 0.8;
+          drawMouse(m1X, mY, true, false, 'walk');
+          drawMouse(m2X, mY, true, true, 'walk');
+        } else {
+          state = 2;
+          timer = 0;
+        }
+        drawSubtitle("Buscando algo de comer entre la inmensidad del campo...");
+      }
       else if (state === 2) {
+        // Escena 2: Encuentran el pequeño pedazo de queso
         timer++;
-        drawMouse(mouse1X, mouseY, true, false);
-        drawMouse(mouse2X, mouseY, false, false);
-        drawFood(215, 176);
-        drawSubtitle("Aunque tenga poca comida para compartir,\nnada supera la paz y ser libre.", "METÁFORA:");
+        showCheese = true;
+        drawMouse(m1X, mY, true, false, 'normal');
+        drawMouse(m2X, mY, true, true, 'normal');
+
+        drawSubtitle("Mira... encontré este pequeño pedacito de queso.", "ÉL:");
 
         if (timer > 110) { state = 3; timer = 0; }
-      } 
+      }
       else if (state === 3) {
-        // Amándose y felices
-        let happyJump = Math.abs(Math.sin(frame * 0.15)) * 3;
-        
-        drawMouse(mouse1X + 8, mouseY - happyJump, true, true);
-        drawMouse(mouse2X - 8, mouseY - happyJump, false, true);
-        drawFood(215, 176);
+        // Escena 3: Él se lo cede a ella
+        timer++;
+        drawMouse(m1X, mY, true, false, 'normal');
+        drawMouse(m2X, mY, true, true, 'normal');
 
-        if (frame % 8 === 0) {
-          createHeart(220, 160 - happyJump);
+        drawSubtitle("Es muy poco, pero tómatelo tú. Te dará fuerzas.", "ÉL:");
+
+        if (timer > 110) { state = 4; timer = 0; }
+      }
+      else if (state === 4) {
+        // Escena 4: Ella se acerca amorosamente
+        if (m2X < 215) {
+          m2X += 0.6;
+          drawMouse(m1X, mY, true, false, 'normal');
+          drawMouse(m2X, mY, true, true, 'walk');
+        } else {
+          state = 5;
+          timer = 0;
+        }
+        drawSubtitle("No me importa que sea poco alimento...", "ELLA:");
+      }
+      else if (state === 5) {
+        // Escena 5: La filosofía de la rata de campo
+        timer++;
+        drawMouse(m1X, mY, true, false, 'normal');
+        drawMouse(m2X, mY, false, true, 'happy');
+
+        drawSubtitle("La rata de campo es libre aunque tenga poco que comer,\nsin miedos, sin rejas y sin trampas...", "ELLA:");
+
+        if (timer > 130) { state = 6; timer = 0; }
+      }
+      else if (state === 6) {
+        // Escena 6: Amor incondicional y final feliz
+        timer++;
+        drawMouse(m1X, mY, true, false, 'happy');
+        drawMouse(m2X, mY, false, true, 'love');
+
+        if (frame % 7 === 0) {
+          createHeart(220, 160);
         }
 
-        drawSubtitle("Libres, felices y juntos en el campo. 💖", "RATA DE CAMPO:");
+        drawSubtitle("Y aún en este mundo tan duro... yo siempre estaría contigo. 💖", "ELLA:");
       }
 
       updateParticles();
@@ -300,12 +353,18 @@
     function startStory() {
       if (state === 0) {
         state = 1;
+        m1X = 40;
+        m2X = 15;
+        showCheese = false;
         timer = 0;
       }
     }
 
     function resetStory() {
       state = 0;
+      m1X = 40;
+      m2X = 15;
+      showCheese = false;
       timer = 0;
       particles = [];
     }
