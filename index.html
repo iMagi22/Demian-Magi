@@ -210,7 +210,7 @@
       }
     }
 
-    // DIBUJAR A DEMIAN (Con Texturas)
+    // DIBUJAR A DEMIAN
     function drawBoy(x, y, showFlowers = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -225,26 +225,24 @@
 
       // Rostro
       drawPixelRect(x + 2, y + 5, 12, 11, '#f1c27d');
-      drawPixelRect(x + 2, y + 15, 12, 1, '#d8a764'); // Sombra barbilla
+      drawPixelRect(x + 2, y + 15, 12, 1, '#d8a764');
 
       if (lookCam) {
-        // Mirada hacia la cámara
         drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 1, y + 6, 2, 2, '#111');
         drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 6, y + 6, 2, 2, '#111');
         drawPixelRect(x + 1, y + 13, 11, 3, '#382518');
       } else {
-        // Mirada normal
         drawPixelRect(x + 4, y + 8, 2, 3, '#111');
         drawPixelRect(x + 9, y + 8, 2, 3, '#111');
         drawPixelRect(x + 2, y + 13, 12, 3, '#382518');
         drawPixelRect(x + 5, y + 12, 6, 1, '#382518');
       }
 
-      // Camiseta Negra con Estampado y Pliegues
+      // Camiseta Negra
       drawPixelRect(x, y + 16, 16, 17, '#111116');
-      drawPixelRect(x + 1, y + 16, 1, 16, '#1a1a22'); // Textura luz
+      drawPixelRect(x + 1, y + 16, 1, 16, '#1a1a22');
       drawPixelRect(x + 3, y + 19, 10, 9, '#ff3344');
       drawPixelRect(x + 5, y + 21, 6, 5, '#ffffff');
 
@@ -267,80 +265,75 @@
         drawPixelRect(x + 16, y + 16, 5, 15, '#f1c27d');
       }
 
-      // Pantalones con Textura y Tenis
+      // Pantalones
       drawPixelRect(x + 1, y + 33, 14, 18, '#181920');
       drawPixelRect(x + 1, y + 34, 2, 15, '#2e303d');
-      drawPixelRect(x + 7, y + 33, 2, 18, '#0d0e12'); // Sombra división
+      drawPixelRect(x + 7, y + 33, 2, 18, '#0d0e12');
       drawPixelRect(x, y + 51, 6, 5, '#282a36');
       drawPixelRect(x + 10, y + 51, 6, 5, '#282a36');
       drawPixelRect(x, y + 55, 6, 1, '#ffffff');
       drawPixelRect(x + 10, y + 55, 6, 1, '#ffffff');
     }
 
-    // DIBUJAR A MAGI (Pelo Negro con Mechas Rojas, Ojos Claros y Sin Reflejo de Lentes)
+    // DIBUJAR A MAGI (Sin lentes, ojos expresivos y bonita estampa en camiseta)
     function drawGirl(x, y, heartEyes = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
-      // Base Cabello Negro/Castaño Oscuro Profundo (Abudante)
+      // Base Cabello Negro con Volumen
       drawPixelRect(x - 6, y - 3, 26, 33, '#0b0c10');
-      drawPixelRect(x - 7, y + 4, 4, 22, '#0b0c10'); // Textura volumen lateral
+      drawPixelRect(x - 7, y + 4, 4, 22, '#0b0c10');
 
-      // Mechas Rojas / Borgoña en Fleco y Lateral (Como en la foto)
-      drawPixelRect(x - 1, y - 2, 10, 5, '#bc1b3b');  // Fleco teñido rojo
-      drawPixelRect(x + 2, y + 2, 5, 4, '#dc284d');   // Brillo mechón frontal
-      drawPixelRect(x - 5, y + 3, 4, 20, '#bc1b3b');  // Mechón rojo cae a la izquierda
+      // Mechas Rojas en Fleco y Mechón Lateral
+      drawPixelRect(x - 1, y - 2, 10, 5, '#bc1b3b');
+      drawPixelRect(x + 2, y + 2, 5, 4, '#dc284d');
+      drawPixelRect(x - 5, y + 3, 4, 20, '#bc1b3b');
 
-      // Rostro Suave con Sombra de Profundidad
+      // Rostro
       drawPixelRect(x + 2, y + 5, 12, 10, '#ffe4c4');
       drawPixelRect(x + 2, y + 14, 12, 1, '#e5be9e');
 
-      // Rubor delicado
-      drawPixelRect(x + 2, y + 11, 3, 2, '#ff99aa');
-      drawPixelRect(x + 11, y + 11, 3, 2, '#ff99aa');
+      // Rubor
+      drawPixelRect(x + 1, y + 10, 3, 2, '#ff99aa');
+      drawPixelRect(x + 12, y + 10, 3, 2, '#ff99aa');
 
-      // Ojos y Lentes Cat-Eye (Transparentes, sin cristal blanco)
+      // --- OJOS HERMOSOS SIN LENTES ---
       if (lookCam) {
-        // Mirando hacia la cámara (Arriba a la izquierda)
-        // Marcos Cat-Eye Negros
-        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
-        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
-        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
-
-        // Sus Ojos Claros / Verdosos (Visibles detrás de los marcos)
-        drawPixelRect(x + 1, y + 5, 4, 3, '#739585'); 
-        drawPixelRect(x + 7, y + 5, 4, 3, '#739585'); 
-        drawPixelRect(x + 1, y + 5, 2, 2, '#111116'); // Pupilas hacia arriba
-        drawPixelRect(x + 7, y + 5, 2, 2, '#111116');
+        // Mirada a la cámara
+        drawPixelRect(x + 2, y + 5, 3, 4, '#739585'); 
+        drawPixelRect(x + 8, y + 5, 3, 4, '#739585'); 
+        drawPixelRect(x + 2, y + 5, 2, 2, '#111116'); 
+        drawPixelRect(x + 8, y + 5, 2, 2, '#111116');
+        drawPixelRect(x + 4, y + 5, 1, 1, '#ffffff'); // Destello
+        drawPixelRect(x + 10, y + 5, 1, 1, '#ffffff');
       } else if (heartEyes) {
-        // Ojos de Corazón con marco Cat-Eye
-        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
-        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
-        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
-
+        // Ojos de corazón
         drawPixelRect(x + 2, y + 5, 4, 4, '#ff3366');
         drawPixelRect(x + 8, y + 5, 4, 4, '#ff3366');
         drawPixelRect(x + 3, y + 5, 2, 2, '#ff79c6');
         drawPixelRect(x + 9, y + 5, 2, 2, '#ff79c6');
       } else {
-        // Marcos Cat-Eye Negros
-        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
-        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
-        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
-
-        // Ojos Miel/Verde Claro Visibles (Sin cristal blanco encima)
-        drawPixelRect(x + 2, y + 5, 4, 3, '#84a993'); 
-        drawPixelRect(x + 8, y + 5, 4, 3, '#84a993');
-        drawPixelRect(x + 3, y + 5, 2, 3, '#1a1a22'); // Pupilas
-        drawPixelRect(x + 9, y + 5, 2, 3, '#1a1a22');
+        // Ojos expresivos de frente
+        drawPixelRect(x + 2, y + 5, 3, 4, '#739585'); // Color verde/miel
+        drawPixelRect(x + 8, y + 5, 3, 4, '#739585');
+        drawPixelRect(x + 3, y + 6, 2, 3, '#111116'); // Pupila
+        drawPixelRect(x + 9, y + 6, 2, 3, '#111116');
+        drawPixelRect(x + 2, y + 5, 1, 1, '#ffffff'); // Brillo bonito
+        drawPixelRect(x + 8, y + 5, 1, 1, '#ffffff');
+        // Pestañas sutiles arriba
+        drawPixelRect(x + 1, y + 4, 5, 1, '#0a0a0f');
+        drawPixelRect(x + 7, y + 4, 5, 1, '#0a0a0f');
       }
 
-      // Labios Rojos Estilizados
+      // Labios Rojos
       drawPixelRect(x + 5, y + 12, 5, 2, '#d62839');
 
-      // Camiseta Negra con Gráfico Detallado
+      // Camiseta Negra con Estampa de Estilo Rock/Gótico Bonita (Sin cuadro blanco)
       drawPixelRect(x + 1, y + 15, 14, 16, '#0f1015');
-      drawPixelRect(x + 3, y + 17, 10, 11, '#bc1b3b'); // Fondo estampado
-      drawPixelRect(x + 5, y + 18, 6, 8, '#ffffff');  // Detalle gráfico blanco
+      // Arte en la playera: Diseño estilizado en borgoña/rojo con detalle de corazón/arte
+      drawPixelRect(x + 3, y + 17, 10, 11, '#7a1122'); 
+      drawPixelRect(x + 4, y + 18, 8, 9, '#bc1b3b');   
+      drawPixelRect(x + 6, y + 19, 4, 4, '#ff3366');   // Corazón/Grafico central
+      drawPixelRect(x + 5, y + 24, 6, 2, '#0f1015');   // Detalle inferior
 
       // Brazos
       if (pose === 'excited') {
@@ -353,10 +346,10 @@
         drawPixelRect(x + 13, y + 15, 4, 14, '#ffe4c4');
       }
 
-      // Pantalón Ajustado con Sombras y Botas
+      // Pantalón y Botas
       drawPixelRect(x + 2, y + 31, 12, 18, '#1e202b');
-      drawPixelRect(x + 2, y + 31, 2, 18, '#2a2d3d'); // Luz pantalón
-      drawPixelRect(x + 1, y + 49, 5, 7, '#07070a');  // Botas
+      drawPixelRect(x + 2, y + 31, 2, 18, '#2a2d3d');
+      drawPixelRect(x + 1, y + 49, 5, 7, '#07070a');
       drawPixelRect(x + 8, y + 49, 5, 7, '#07070a');
     }
 
