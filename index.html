@@ -104,14 +104,14 @@
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // NOCHE DETALLADA
+    // FONDO Y NOCHE
     function drawBackground() {
-      // Degradado del Cielo Nocturno
+      // Cielo Nocturno
       drawPixelRect(0, 0, 480, 80, '#060712');
       drawPixelRect(0, 80, 480, 60, '#0a0d1d');
       drawPixelRect(0, 140, 480, 50, '#111528');
 
-      // Estrellas Titilantes
+      // Estrellas
       let stars = [
         [15, 20], [50, 35], [90, 15], [140, 28], [210, 15], [260, 35], 
         [320, 18], [370, 40], [420, 12], [450, 50], [180, 55], [300, 70]
@@ -122,11 +122,11 @@
         }
       });
 
-      // Luna brillante
+      // Luna
       drawPixelRect(410, 18, 24, 24, '#ffffd0');
       drawPixelRect(406, 22, 32, 16, '#ffffd0');
 
-      // Nubes flotantes lentas
+      // Nubes
       let cloudOffset = (frame * 0.25) % 520;
       let clouds = [
         [cloudOffset - 40, 25], [cloudOffset + 180 - 520, 40], [cloudOffset + 380 - 520, 20]
@@ -153,7 +153,7 @@
       drawPixelRect(0, 30, 140, 10, '#121420');
       drawPixelRect(0, 22, 135, 8, '#ff3344');
 
-      // Ventana principal cálida
+      // Ventana principal
       drawPixelRect(25, 65, 40, 50, '#f1fa8c');
       drawPixelRect(25, 65, 40, 3, '#121420');
       drawPixelRect(44, 65, 3, 50, '#121420');
@@ -171,14 +171,14 @@
         drawPixelRect(138, 51, 3, 3, '#ff3344');
       }
 
-      // --- CARRO NEGRO (Conductor Izq / Puerta Trasera Der, Justo Detrás) ---
+      // --- CARRO NEGRO ---
       let carX = 175; 
       let carY = 142;
 
       // Sombra
       drawPixelRect(carX - 5, carY + 28, 115, 6, '#06070a');
 
-      // Carrocería Negra
+      // Carrocería
       drawPixelRect(carX, carY + 10, 105, 20, '#101117'); 
       drawPixelRect(carX + 25, carY, 65, 14, '#191b24');
       
@@ -190,7 +190,7 @@
       drawPixelRect(carX + 1, carY + 12, 3, 6, '#ff2233');   
       drawPixelRect(carX + 102, carY + 12, 3, 6, '#ffffd0'); 
 
-      // PUERTA TRASERA ABIERTA (Lado Derecho del auto)
+      // PUERTA TRASERA ABIERTA
       if (doorOpen) {
         drawPixelRect(carX + 61, carY + 2, 8, 26, '#050508'); 
         drawPixelRect(carX + 67, carY + 4, 8, 24, '#242735'); 
@@ -202,7 +202,7 @@
       drawPixelRect(carX + 23, carY + 25, 8, 6, '#6272a4');
       drawPixelRect(carX + 77, carY + 25, 8, 6, '#6272a4');
 
-      // --- SUELO Y BANQUETA ---
+      // --- SUELO ---
       drawPixelRect(0, 190, 480, 80, '#14151e');
       drawPixelRect(0, 190, 480, 4, '#32344a');
       for(let i = 0; i < 480; i += 50) {
@@ -210,7 +210,7 @@
       }
     }
 
-    // DIBUJAR A DEMIAN
+    // DIBUJAR A DEMIAN (Con Texturas)
     function drawBoy(x, y, showFlowers = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
@@ -219,28 +219,34 @@
       drawPixelRect(x + 14, y + 2, 4, 11, '#ff3344');
       drawPixelRect(x + 1, y - 3, 14, 4, '#282a36');
 
-      // Cabello castaño oscuro
+      // Cabello castaño oscuro con textura
       drawPixelRect(x + 2, y, 12, 6, '#211510');
+      drawPixelRect(x + 4, y - 1, 6, 2, '#332118');
 
       // Rostro
       drawPixelRect(x + 2, y + 5, 12, 11, '#f1c27d');
+      drawPixelRect(x + 2, y + 15, 12, 1, '#d8a764'); // Sombra barbilla
 
       if (lookCam) {
+        // Mirada hacia la cámara
         drawPixelRect(x + 1, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 1, y + 6, 2, 2, '#111');
         drawPixelRect(x + 6, y + 6, 3, 3, '#ffffff');
         drawPixelRect(x + 6, y + 6, 2, 2, '#111');
-        drawPixelRect(x + 1, y + 13, 11, 3, '#4a3322');
+        drawPixelRect(x + 1, y + 13, 11, 3, '#382518');
       } else {
+        // Mirada normal
         drawPixelRect(x + 4, y + 8, 2, 3, '#111');
         drawPixelRect(x + 9, y + 8, 2, 3, '#111');
-        drawPixelRect(x + 2, y + 13, 12, 3, '#4a3322');
-        drawPixelRect(x + 5, y + 12, 6, 1, '#4a3322');
+        drawPixelRect(x + 2, y + 13, 12, 3, '#382518');
+        drawPixelRect(x + 5, y + 12, 6, 1, '#382518');
       }
 
-      // Camiseta Negra con Estampado Rojo
+      // Camiseta Negra con Estampado y Pliegues
       drawPixelRect(x, y + 16, 16, 17, '#111116');
+      drawPixelRect(x + 1, y + 16, 1, 16, '#1a1a22'); // Textura luz
       drawPixelRect(x + 3, y + 19, 10, 9, '#ff3344');
+      drawPixelRect(x + 5, y + 21, 6, 5, '#ffffff');
 
       // Brazos
       if (pose === 'hug') {
@@ -261,76 +267,100 @@
         drawPixelRect(x + 16, y + 16, 5, 15, '#f1c27d');
       }
 
-      // Pantalones y Tenis
+      // Pantalones con Textura y Tenis
       drawPixelRect(x + 1, y + 33, 14, 18, '#181920');
-      drawPixelRect(x + 1, y + 34, 2, 15, '#ffffff');
+      drawPixelRect(x + 1, y + 34, 2, 15, '#2e303d');
+      drawPixelRect(x + 7, y + 33, 2, 18, '#0d0e12'); // Sombra división
       drawPixelRect(x, y + 51, 6, 5, '#282a36');
       drawPixelRect(x + 10, y + 51, 6, 5, '#282a36');
+      drawPixelRect(x, y + 55, 6, 1, '#ffffff');
+      drawPixelRect(x + 10, y + 55, 6, 1, '#ffffff');
     }
 
-    // DIBUJAR A MAGI
+    // DIBUJAR A MAGI (Pelo Negro con Mechas Rojas, Ojos Claros y Sin Reflejo de Lentes)
     function drawGirl(x, y, heartEyes = false, pose = 'normal') {
       let lookCam = (pose === 'look_cam');
 
-      // Cabello abundante largo
-      drawPixelRect(x - 5, y - 3, 24, 32, '#08090d');
+      // Base Cabello Negro/Castaño Oscuro Profundo (Abudante)
+      drawPixelRect(x - 6, y - 3, 26, 33, '#0b0c10');
+      drawPixelRect(x - 7, y + 4, 4, 22, '#0b0c10'); // Textura volumen lateral
 
-      // Mechas rojas en degradado
-      drawPixelRect(x, y - 2, 14, 6, '#ff2244');
-      drawPixelRect(x - 4, y + 3, 6, 22, '#ff2244');
-      drawPixelRect(x + 12, y + 5, 5, 20, '#ff2244');
+      // Mechas Rojas / Borgoña en Fleco y Lateral (Como en la foto)
+      drawPixelRect(x - 1, y - 2, 10, 5, '#bc1b3b');  // Fleco teñido rojo
+      drawPixelRect(x + 2, y + 2, 5, 4, '#dc284d');   // Brillo mechón frontal
+      drawPixelRect(x - 5, y + 3, 4, 20, '#bc1b3b');  // Mechón rojo cae a la izquierda
 
-      // Rostro y Rubor
-      drawPixelRect(x + 2, y + 5, 12, 10, '#ffe0bd');
-      drawPixelRect(x + 2, y + 11, 3, 2, '#ff88a0');
-      drawPixelRect(x + 11, y + 11, 3, 2, '#ff88a0');
+      // Rostro Suave con Sombra de Profundidad
+      drawPixelRect(x + 2, y + 5, 12, 10, '#ffe4c4');
+      drawPixelRect(x + 2, y + 14, 12, 1, '#e5be9e');
 
+      // Rubor delicado
+      drawPixelRect(x + 2, y + 11, 3, 2, '#ff99aa');
+      drawPixelRect(x + 11, y + 11, 3, 2, '#ff99aa');
+
+      // Ojos y Lentes Cat-Eye (Transparentes, sin cristal blanco)
       if (lookCam) {
-        drawPixelRect(x, y + 4, 13, 5, '#0d0d12');
-        drawPixelRect(x - 2, y + 2, 4, 3, '#0d0d12');
-        drawPixelRect(x + 1, y + 5, 4, 3, '#ffffff');
-        drawPixelRect(x + 7, y + 5, 4, 3, '#ffffff');
-        drawPixelRect(x + 1, y + 5, 2, 2, '#111');
-        drawPixelRect(x + 7, y + 5, 2, 2, '#111');
+        // Mirando hacia la cámara (Arriba a la izquierda)
+        // Marcos Cat-Eye Negros
+        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
+        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
+        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
+
+        // Sus Ojos Claros / Verdosos (Visibles detrás de los marcos)
+        drawPixelRect(x + 1, y + 5, 4, 3, '#739585'); 
+        drawPixelRect(x + 7, y + 5, 4, 3, '#739585'); 
+        drawPixelRect(x + 1, y + 5, 2, 2, '#111116'); // Pupilas hacia arriba
+        drawPixelRect(x + 7, y + 5, 2, 2, '#111116');
       } else if (heartEyes) {
-        drawPixelRect(x + 1, y + 5, 14, 5, '#0d0d12');
-        drawPixelRect(x + 2, y + 5, 5, 5, '#ff3366');
-        drawPixelRect(x + 9, y + 5, 5, 5, '#ff3366');
-        drawPixelRect(x + 3, y + 5, 3, 2, '#ff79c6');
-        drawPixelRect(x + 10, y + 5, 3, 2, '#ff79c6');
+        // Ojos de Corazón con marco Cat-Eye
+        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
+        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
+        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
+
+        drawPixelRect(x + 2, y + 5, 4, 4, '#ff3366');
+        drawPixelRect(x + 8, y + 5, 4, 4, '#ff3366');
+        drawPixelRect(x + 3, y + 5, 2, 2, '#ff79c6');
+        drawPixelRect(x + 9, y + 5, 2, 2, '#ff79c6');
       } else {
-        drawPixelRect(x + 1, y + 5, 14, 5, '#0d0d12');
-        drawPixelRect(x - 1, y + 3, 4, 3, '#0d0d12');
-        drawPixelRect(x + 13, y + 3, 4, 3, '#0d0d12');
-        drawPixelRect(x + 3, y + 6, 3, 3, '#ffffff');
-        drawPixelRect(x + 10, y + 6, 3, 3, '#ffffff');
+        // Marcos Cat-Eye Negros
+        drawPixelRect(x, y + 4, 14, 5, '#0a0a0f');
+        drawPixelRect(x - 2, y + 2, 4, 3, '#0a0a0f');
+        drawPixelRect(x + 12, y + 2, 4, 3, '#0a0a0f');
+
+        // Ojos Miel/Verde Claro Visibles (Sin cristal blanco encima)
+        drawPixelRect(x + 2, y + 5, 4, 3, '#84a993'); 
+        drawPixelRect(x + 8, y + 5, 4, 3, '#84a993');
+        drawPixelRect(x + 3, y + 5, 2, 3, '#1a1a22'); // Pupilas
+        drawPixelRect(x + 9, y + 5, 2, 3, '#1a1a22');
       }
 
-      // Labios
-      drawPixelRect(x + 5, y + 12, 5, 2, '#ff1133');
+      // Labios Rojos Estilizados
+      drawPixelRect(x + 5, y + 12, 5, 2, '#d62839');
 
-      // Camiseta
-      drawPixelRect(x + 1, y + 15, 14, 16, '#181924');
-      drawPixelRect(x + 4, y + 18, 8, 8, '#ff5555');
+      // Camiseta Negra con Gráfico Detallado
+      drawPixelRect(x + 1, y + 15, 14, 16, '#0f1015');
+      drawPixelRect(x + 3, y + 17, 10, 11, '#bc1b3b'); // Fondo estampado
+      drawPixelRect(x + 5, y + 18, 6, 8, '#ffffff');  // Detalle gráfico blanco
 
       // Brazos
       if (pose === 'excited') {
-        drawPixelRect(x - 5, y + 8, 5, 10, '#ffe0bd');
-        drawPixelRect(x + 14, y + 8, 5, 10, '#ffe0bd');
+        drawPixelRect(x - 5, y + 8, 5, 10, '#ffe4c4');
+        drawPixelRect(x + 14, y + 8, 5, 10, '#ffe4c4');
       } else if (pose === 'hug') {
-        drawPixelRect(x + 8, y + 16, 10, 5, '#ffe0bd');
+        drawPixelRect(x + 8, y + 16, 10, 5, '#ffe4c4');
       } else {
-        drawPixelRect(x - 3, y + 15, 4, 14, '#ffe0bd');
-        drawPixelRect(x + 13, y + 15, 4, 14, '#ffe0bd');
+        drawPixelRect(x - 3, y + 15, 4, 14, '#ffe4c4');
+        drawPixelRect(x + 13, y + 15, 4, 14, '#ffe4c4');
       }
 
-      // Pantalón y Botas
-      drawPixelRect(x + 2, y + 31, 12, 18, '#232533');
-      drawPixelRect(x + 1, y + 49, 5, 7, '#0a0a0f');
-      drawPixelRect(x + 8, y + 49, 5, 7, '#0a0a0f');
+      // Pantalón Ajustado con Sombras y Botas
+      drawPixelRect(x + 2, y + 31, 12, 18, '#1e202b');
+      drawPixelRect(x + 2, y + 31, 2, 18, '#2a2d3d'); // Luz pantalón
+      drawPixelRect(x + 1, y + 49, 5, 7, '#07070a');  // Botas
+      drawPixelRect(x + 8, y + 49, 5, 7, '#07070a');
     }
 
-    // Partículas
+    // Partículas de Corazón
     function createHeartParticle(x, y) {
       particles.push({
         x: x + (Math.random() * 24 - 12),
@@ -440,7 +470,7 @@
         timer++;
         drawGirl(girlX, 134, true, 'excited');
         drawBoy(boyX, 134, true, 'normal');
-        drawSubtitle("¡DEMIAN! 😍", "MAGI:"); // <--- Nombre corregido aquí
+        drawSubtitle("¡DEMIAN! 😍", "MAGI:");
 
         if (timer > 85) {
           animState = 7;
