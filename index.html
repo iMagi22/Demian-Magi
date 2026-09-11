@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Rata de Campo - Escena Súper Lenta 8-Bits</title>
+  <title>Rata de Ciudad - Historia de Amor 8-Bits</title>
   <style>
     body {
       background-color: #050608;
@@ -19,7 +19,7 @@
 
     h1 {
       font-size: 16px;
-      color: #50fa7b;
+      color: #ff79c6;
       margin-bottom: 10px;
       letter-spacing: 2px;
       text-shadow: 2px 2px #000;
@@ -28,7 +28,7 @@
     .game-container {
       position: relative;
       border: 4px solid #fff;
-      box-shadow: 0 0 35px rgba(80, 250, 123, 0.3);
+      box-shadow: 0 0 35px rgba(255, 121, 198, 0.3);
       background: #000;
     }
 
@@ -44,7 +44,7 @@
     }
 
     button {
-      background: #50fa7b;
+      background: #ff79c6;
       border: 2px solid #fff;
       color: #000;
       padding: 10px 22px;
@@ -57,8 +57,8 @@
     }
 
     button:hover {
-      background: #ff79c6;
-      color: #fff;
+      background: #50fa7b;
+      color: #000;
     }
 
     button:active {
@@ -69,7 +69,7 @@
 </head>
 <body>
 
-  <h1>[ LA RATA DE CAMPO - EDICIÓN PAUSADA ]</h1>
+  <h1>[ LA RATA DE CIUDAD - LA DILÉCTICA DEL PELIGRO ]</h1>
 
   <div class="game-container">
     <canvas id="gameCanvas" width="480" height="270"></canvas>
@@ -93,12 +93,16 @@
     let timer = 0;
     let particles = [];
 
-    // Scroll de la caminata larga
+    // Posiciones y cámara
     let cameraX = 0;
-    let m1X = -30;
-    let m2X = -60;
+    let m1X = 30;
+    let m2X = 5;
     let mY = 172;
-    let cheeseX = 520;
+    
+    // El Gato Enemigo
+    let catX = -120;
+    let catY = 145;
+    let catShow = false;
 
     function drawPixelRect(x, y, w, h, color) {
       ctx.fillStyle = color;
@@ -110,58 +114,73 @@
       ctx.fillRect(Math.round(x), Math.round(y), w, h);
     }
 
-    // FONDO: CAMPO NOCTURNO
+    // FONDO: CALLEJÓN DE LA CIUDAD DE NOCHE Y LLUVIA SUTIL
     function drawBackground() {
-      // Cielo Nocturno Fijo
-      drawFixedPixelRect(0, 0, 480, 100, '#090c1a');
-      drawFixedPixelRect(0, 100, 480, 50, '#101626');
-      drawFixedPixelRect(0, 150, 480, 40, '#182030');
+      // Cielo nocturno urbano con neón difuso
+      drawFixedPixelRect(0, 0, 480, 180, '#0a0914');
+      drawFixedPixelRect(0, 100, 480, 80, '#121024');
 
-      // Estrellas
-      let stars = [
-        [25, 20], [70, 45], [120, 15], [180, 35], [240, 10], 
-        [300, 50], [370, 25], [430, 40], [200, 65], [340, 75],
-        [450, 15], [90, 75], [150, 50], [280, 25]
-      ];
-      stars.forEach(([sx, sy], i) => {
-        if ((frame + i * 10) % 40 < 28) {
-          drawFixedPixelRect(sx, sy, 2, 2, '#ffffff');
+      // Edificios lejanos con luces
+      for (let i = -100; i < 900; i += 70) {
+        drawPixelRect(i, 20, 60, 160, '#1a1829');
+        // Ventanas de los edificios
+        for (let wy = 30; wy < 150; wy += 20) {
+          if ((i + wy) % 3 === 0) {
+            drawPixelRect(i + 10, wy, 8, 12, '#ffb86c');
+            drawPixelRect(i + 35, wy, 8, 12, '#8be9fd');
+          }
         }
-      });
-
-      // Luna Llena
-      drawFixedPixelRect(390, 15, 28, 28, '#ffb86c');
-      drawFixedPixelRect(386, 20, 36, 18, '#ffb86c');
-
-      // Montañas lejanas
-      for (let i = -100; i < 900; i += 180) {
-        drawPixelRect(i, 130, 140, 60, '#0c121c');
-        drawPixelRect(i + 80, 110, 160, 80, '#090e17');
       }
 
-      // Suelo de Hierba
-      drawFixedPixelRect(0, 180, 480, 90, '#17331c');
-      drawFixedPixelRect(0, 180, 480, 6, '#286338');
+      // Edificios cercanos (Callejón)
+      drawPixelRect(-150, 0, 120, 180, '#0f0d1a');
+      drawPixelRect(300, 0, 150, 180, '#0f0d1a');
+      drawPixelRect(650, 0, 200, 180, '#0f0d1a');
 
-      // Briznas de Pasto Animadas
-      for (let i = -50; i < 900; i += 18) {
-        let wind = Math.sin((frame + i) * 0.04) * 2;
-        drawPixelRect(i, 174, 3, 8, '#50fa7b');
-        drawPixelRect(i + wind, 170, 2, 5, '#50fa7b');
-      }
+      // Suelo de Asfalto Húmedo
+      drawFixedPixelRect(0, 180, 480, 90, '#1c1b29');
+      drawFixedPixelRect(0, 180, 480, 4, '#383552');
 
-      // Flores silvestres de campo
-      let flowers = [[40, 195], [110, 205], [290, 198], [420, 205], [600, 195], [720, 202]];
-      flowers.forEach(([fx, fy]) => {
-        drawPixelRect(fx, fy, 3, 3, '#ff79c6');
-        drawPixelRect(fx + 1, fy - 1, 1, 1, '#ffffff');
-      });
+      // Tuberías y Cajas en el callejón
+      drawPixelRect(120, 140, 30, 40, '#282a36');
+      drawPixelRect(280, 150, 25, 30, '#44475a');
+
+      // Reflejos Neón en el suelo
+      drawPixelRect(80, 182, 40, 2, '#ff79c6');
+      drawPixelRect(240, 182, 50, 2, '#bd93f9');
+      drawPixelRect(480, 182, 60, 2, '#50fa7b');
     }
 
-    // DIBUJAR RATA DE CAMPO
+    // DIBUJAR GATO PELIGROSO
+    function drawCat(x, y) {
+      if (!catShow) return;
+      
+      // Cuerpo
+      drawPixelRect(x, y + 10, 40, 20, '#111116');
+      // Cabeza
+      drawPixelRect(x + 32, y + 2, 22, 20, '#111116');
+      // Orejas puntiagudas
+      drawPixelRect(x + 34, y - 6, 6, 8, '#111116');
+      drawPixelRect(x + 46, y - 6, 6, 8, '#111116');
+      // Ojos amarillos brillantes amenazantes
+      drawPixelRect(x + 42, y + 8, 4, 5, '#f1fa8c');
+      drawPixelRect(x + 50, y + 8, 4, 5, '#f1fa8c');
+      drawPixelRect(x + 44, y + 9, 1, 3, '#000000'); // Pupila felina
+      drawPixelRect(x + 52, y + 9, 1, 3, '#000000');
+      // Cola de gato
+      let tailWiggle = Math.sin(frame * 0.2) * 4;
+      drawPixelRect(x - 12, y + 8 + tailWiggle, 14, 4, '#111116');
+      // Patas corriendo
+      let leg = Math.sin(frame * 0.4) * 6;
+      drawPixelRect(x + 5 + leg, y + 30, 6, 8, '#111116');
+      drawPixelRect(x + 28 - leg, y + 30, 6, 8, '#111116');
+    }
+
+    // DIBUJAR RATA
     function drawMouse(x, y, isRight = true, isGirl = false, pose = 'normal') {
-      let isMoving = (pose === 'walk');
-      let legOffset = isMoving ? Math.sin(frame * 0.15) * 2.5 : 0;
+      let isMoving = (pose === 'walk' || pose === 'run');
+      let speedMult = (pose === 'run') ? 0.4 : 0.2;
+      let legOffset = isMoving ? Math.sin(frame * speedMult) * 3 : 0;
       let happyJump = (pose === 'happy' || pose === 'love') ? Math.abs(Math.sin(frame * 0.12)) * 4 : 0;
       let actualY = y - happyJump;
 
@@ -177,7 +196,7 @@
       drawPixelRect(earX, actualY - 6, 5, 5, '#ffb86c');
       drawPixelRect(earX + 1, actualY - 5, 3, 3, '#ff9999');
 
-      // Flor en la oreja de ella
+      // Flor de ella
       if (isGirl) {
         drawPixelRect(earX - 2, actualY - 6, 3, 3, '#ff79c6');
       }
@@ -196,6 +215,9 @@
         drawPixelRect(eyeX, actualY + 2, 3, 1, '#000000');
         drawPixelRect(eyeX - 1, actualY + 3, 1, 2, '#000000');
         drawPixelRect(eyeX + 3, actualY + 3, 1, 2, '#000000');
+      } else if (pose === 'scared') {
+        drawPixelRect(eyeX, actualY + 2, 3, 3, '#ffffff');
+        drawPixelRect(eyeX + 1, actualY + 3, 1, 1, '#000000');
       } else {
         drawPixelRect(eyeX, actualY + 3, 2, 2, '#000000');
         drawPixelRect(eyeX, actualY + 3, 1, 1, '#ffffff');
@@ -211,21 +233,31 @@
       drawPixelRect(x + 11 - legOffset, actualY + 10, 3, 2, '#555');
     }
 
-    // POCA COMIDA: QUESO
-    function drawFood(x, y) {
-      drawPixelRect(x, y, 9, 7, '#f1fa8c');
-      drawPixelRect(x + 2, y - 2, 5, 3, '#f1fa8c');
-      drawPixelRect(x + 2, y + 2, 2, 2, '#ffb86c');
+    // BANQUETE DE LA CIUDAD (ABUNDANTE COMIDA)
+    function drawFeast(x, y) {
+      // Gran trozo de queso holandés
+      drawPixelRect(x, y - 5, 18, 14, '#f1fa8c');
+      drawPixelRect(x + 4, y - 9, 10, 5, '#f1fa8c');
+      drawPixelRect(x + 4, y, 4, 4, '#ffb86c');
+
+      // Jamón jugoso
+      drawPixelRect(x + 22, y - 2, 16, 10, '#ff5555');
+      drawPixelRect(x + 24, y - 4, 12, 3, '#ff79c6');
+      drawPixelRect(x + 22, y - 2, 3, 10, '#ffffff'); // Huesito
+
+      // Pan frito / Donut
+      drawPixelRect(x + 42, y + 1, 12, 7, '#ffb86c');
+      drawPixelRect(x + 44, y - 1, 8, 3, '#ff79c6'); // Glaseado
     }
 
-    // PARTÍCULAS DE CORAZONES
+    // PARTÍCULAS
     function createHeart(x, y) {
       particles.push({
         x: x + (Math.random() * 16 - 8),
         y: y,
         vy: -0.3,
         life: 70,
-        color: Math.random() > 0.3 ? '#ff79c6' : '#ff3366'
+        color: Math.random() > 0.3 ? '#ff79c6' : '#bd93f9'
       });
     }
 
@@ -244,14 +276,14 @@
 
     // SUBTÍTULOS
     function drawSubtitle(text, speaker = "") {
-      drawFixedPixelRect(20, 200, 440, 60, '#000000');
-      drawFixedPixelRect(22, 202, 436, 56, '#ffffff');
-      drawFixedPixelRect(24, 204, 432, 52, '#0d1117');
+      drawFixedPixelRect(20, 195, 440, 65, '#000000');
+      drawFixedPixelRect(22, 197, 436, 61, '#ffffff');
+      drawFixedPixelRect(24, 199, 432, 57, '#0d1117');
 
       if (speaker) {
-        ctx.fillStyle = '#50fa7b';
+        ctx.fillStyle = '#ff79c6';
         ctx.font = 'bold 11px monospace';
-        ctx.fillText(speaker, 36, 220);
+        ctx.fillText(speaker, 36, 215);
       }
 
       ctx.fillStyle = '#ffffff';
@@ -259,126 +291,136 @@
       
       let lines = text.split('\n');
       lines.forEach((line, index) => {
-        ctx.fillText(line, 36, speaker ? 234 + (index * 13) : 224 + (index * 13));
+        ctx.fillText(line, 36, speaker ? 230 + (index * 13) : 220 + (index * 13));
       });
     }
 
-    // BUCLE NARRATIVO CON ACERCAMIENTO ULTRA LENTO
+    // BUCLE NARRATIVO PAUSADO Y EXTREMADAMENTE LENTO
     function gameLoop() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       frame++;
 
       drawBackground();
-
-      drawFood(cheeseX, 176);
+      drawCat(catX, catY);
 
       if (state === 0) {
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
-        drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar.");
+        drawSubtitle("Haz clic en 'Iniciar Historia' para comenzar la fuga.");
       }
       else if (state === 1) {
-        // Caminata inicial
-        if (m1X < 180) {
-          m1X += 0.4;
-          m2X += 0.4;
-          drawMouse(m1X, mY, true, false, 'walk');
-          drawMouse(m2X, mY, true, true, 'walk');
+        // Inicio de Persecución: ¡El Gato aparece!
+        catShow = true;
+        if (m1X < 240) {
+          m1X += 1.4;
+          m2X += 1.4;
+          catX += 1.35;
+          drawMouse(m1X, mY, true, false, 'run');
+          drawMouse(m2X, mY, true, true, 'run');
         } else {
           state = 2;
           timer = 0;
         }
-        drawSubtitle("Buscando algo de comer en la inmensidad de la noche...");
+        drawSubtitle("¡RÁPIDO! ¡El gato de la ciudad nos ha visto!", "ÉL:");
       }
       else if (state === 2) {
-        // Pausa conversacional
+        // Pausa de escape dramático (~7 segundos)
         timer++;
-        drawMouse(m1X, mY, true, false, 'normal');
-        drawMouse(m2X, mY, true, true, 'normal');
+        drawMouse(m1X, mY, true, false, 'scared');
+        drawMouse(m2X, mY, true, true, 'scared');
 
-        drawSubtitle("Llevamos mucho tiempo buscando...\nLa comida no abunda por aquí.", "ÉL:");
+        drawSubtitle("¡Corre al escondite detrás de la tubería!\n¡No mires atrás!", "ÉL:");
 
-        if (timer > 400) { state = 3; timer = 0; }
+        if (timer > 450) { state = 3; timer = 0; }
       }
       else if (state === 3) {
-        // Segunda caminata
-        if (m1X < 490) {
-          m1X += 0.4;
-          m2X += 0.4;
-          cameraX += 0.28;
-          drawMouse(m1X, mY, true, false, 'walk');
-          drawMouse(m2X, mY, true, true, 'walk');
+        // Escapan metiéndose al escondite
+        if (m1X < 500) {
+          m1X += 1.8;
+          m2X += 1.8;
+          catX += 0.8; // El gato se queda atrás confundido
+          cameraX += 1.2;
+          drawMouse(m1X, mY, true, false, 'run');
+          drawMouse(m2X, mY, true, true, 'run');
         } else {
+          catShow = false; // Perdieron al gato
           state = 4;
           timer = 0;
         }
-        drawSubtitle("Siguen recorriendo la hierba bajo las estrellas...");
+        drawSubtitle("Logran escabullirse por una grieta estrecha a salvo...");
       }
       else if (state === 4) {
-        // Encuentran el queso
+        // Encuentran el Banquete de la ciudad
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
-        drawSubtitle("¡Mira! Encontré un pedacito de queso...", "ÉL:");
+        drawSubtitle("Uff... Lo logramos... perdimos al gato.\nY mira esto... jamás había visto tanta comida junta.", "ÉL:");
 
-        if (timer > 450) { state = 5; timer = 0; }
+        if (timer > 500) { state = 5; timer = 0; }
       }
       else if (state === 5) {
-        // Ofrece el queso
+        // Admiración de la comida abundante (~8.5 segundos)
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
-        drawSubtitle("Sé que es muy poco, pero quiero que te lo quedes tú.\nNecesitas comer algo.", "ÉL:");
+        drawSubtitle("Quesos maduros, carne, dulces de panadería...\nEn la ciudad la comida abunda por todas partes.", "ÉL:");
 
-        if (timer > 500) { state = 6; timer = 0; }
+        if (timer > 550) { state = 6; timer = 0; }
       }
       else if (state === 6) {
-        // Ella camina ULTRA DESPACIO hacia él
-        if (m2X < 475) {
-          m2X += 0.12; // Velocidad reducida a más de la mitad
+        // Ella se acerca suavemente (~6 segundos de caminata ultra lenta)
+        drawFeast(550, 175);
+        if (m2X < 485) {
+          m2X += 0.12;
           drawMouse(m1X, mY, true, false, 'normal');
           drawMouse(m2X, mY, true, true, 'walk');
         } else {
-          state = 65; // Sub-estado para que se quede quieta al llegar antes de cambiar texto
+          state = 65;
           timer = 0;
         }
-        drawSubtitle("Ella se acerca a él dulcemente...");
+        drawSubtitle("Ella camina pacíficamente hacia él rodeada del banquete...");
       }
       else if (state === 65) {
-        // Pausa al llegar (350 frames ≈ 6 segundos de tiempo de lectura extra)
+        // Pausa al llegar (~6 segundos)
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, true, true, 'normal');
 
-        drawSubtitle("Ella se acerca a él dulcemente...");
+        drawSubtitle("Ella mira los manjares y luego lo mira a los ojos...");
 
-        if (timer > 350) { state = 7; timer = 0; }
+        if (timer > 380) { state = 7; timer = 0; }
       }
       else if (state === 7) {
-        // Filosofía 1 (~10 segundos)
+        // Dialéctica de la Rata de Ciudad 1 (~10 segundos)
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
-        drawSubtitle("No me importa que tengamos poca comida...", "ELLA:");
+        drawSubtitle("Dicen que la rata de ciudad vive una vida corta y peligrosa,\nsiempre huyendo de trampas y gatos a cambio de lujos...", "ELLA:");
 
-        if (timer > 600) { state = 8; timer = 0; }
+        if (timer > 650) { state = 8; timer = 0; }
       }
       else if (state === 8) {
-        // Filosofía 2 (~11.5 segundos)
+        // Dialéctica Anime de la Rata de Ciudad 2 (~11 segundos)
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'normal');
         drawMouse(m2X, mY, false, true, 'happy');
 
-        drawSubtitle("La rata de campo vive libre aunque tenga poco que comer.\nSin trampas, sin gatos y sin miedo.", "ELLA:");
+        drawSubtitle("Muchos arriesgan su vida solo por probar esta deliciosa comida.\nPero para mí, no es la comida lo que le da valor a este riesgo.", "ELLA:");
 
         if (timer > 700) { state = 9; timer = 0; }
       }
       else if (state === 9) {
-        // Final romántico
+        // Final Romántico Incondicional
         timer++;
+        drawFeast(550, 175);
         drawMouse(m1X, mY, true, false, 'happy');
         drawMouse(m2X, mY, false, true, 'love');
 
@@ -386,7 +428,7 @@
           createHeart(m1X + 15, 160);
         }
 
-        drawSubtitle("En un mundo donde tengamos poco o mucho...\nyo siempre elegiría estar contigo. 💖", "ELLA:");
+        drawSubtitle("Si soy una rata de ciudad, no es por el lujo ni por el banquete...\nEs porque en esta ciudad cruel, tú estás a mi lado. 💖", "ELLA:");
       }
 
       updateParticles();
@@ -396,8 +438,9 @@
     function startStory() {
       if (state === 0) {
         state = 1;
-        m1X = 40;
-        m2X = 10;
+        m1X = 30;
+        m2X = 5;
+        catX = -120;
         cameraX = 0;
         timer = 0;
       }
@@ -405,10 +448,12 @@
 
     function resetStory() {
       state = 0;
-      m1X = 40;
-      m2X = 10;
+      m1X = 30;
+      m2X = 5;
+      catX = -120;
       cameraX = 0;
       timer = 0;
+      catShow = false;
       particles = [];
     }
 
