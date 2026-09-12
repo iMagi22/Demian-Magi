@@ -200,6 +200,14 @@
     color:#fff;
     text-shadow:0 1px 3px rgba(0,0,0,.4);
   }
+  .choice-select-hint{
+    display:inline-block;
+    margin-top:8px;
+    font-size:12px;
+    letter-spacing:1px;
+    color:var(--pink-light);
+    opacity:.9;
+  }
   .choice-buttons{
     display:flex;
     gap:14px;
@@ -366,12 +374,12 @@
     </div>
 
     <div class="choice-area">
-      <p class="choice-question">Demian... ¿tú quieres ser<br><strong>Rata de Campo</strong> o <strong>Rata de Ciudad</strong>? 🐭🏙️</p>
+      <p class="choice-question">Demian... ¿tú quieres ser<br><strong>Rata de Campo</strong> o <strong>Rata de Ciudad</strong>? 🐭🏙️<br><span class="choice-select-hint">selecciona un botón ↓</span></p>
       <div class="choice-buttons">
         <button class="choice-btn" id="btnCampo">🐭 Rata de Campo</button>
         <button class="choice-btn" id="btnCiudad">🏙️ Rata de Ciudad</button>
       </div>
-      <p class="choice-note" id="choiceNote"></p>
+      <p class="choice-note" id="choiceNote">puedes seleccionar la otra después de acabar con la primera historia</p>
     </div>
 
     <div class="game-area" id="campoGameArea" style="display:none;">
@@ -940,6 +948,7 @@ function gameLoop() {
     }
   }
   else if (animState === 7) {
+    timer++;
     drawGirl(girlX, 134, true, 'hug');
     drawBoy(boyX, 134, true, 'hug');
 
@@ -949,7 +958,11 @@ function gameLoop() {
       createHeartParticle(192, 122);
     }
 
-    drawSubtitle("¡Un beso grabado frente a la cámara! 💖");
+    if (timer < 600) {
+      drawSubtitle("¡Un beso grabado frente a la cámara! 💖");
+    } else {
+      drawSubtitle("-- FIN --");
+    }
   }
 
   updateAndDrawParticles();
@@ -991,7 +1004,6 @@ function showCampoGame(){
   ciudadGameArea.style.display = 'none';
   btnCampo.classList.add('selected');
   btnCiudad.classList.remove('selected');
-  choiceNote.textContent = '🐭 Aquí va nuestra historia de Rata de Campo...';
   if(!campoLoopStarted){
     campoLoopStarted = true;
     gameLoopCampo();
@@ -1004,7 +1016,6 @@ function showCiudadGame(){
   campoGameArea.style.display = 'none';
   btnCiudad.classList.add('selected');
   btnCampo.classList.remove('selected');
-  choiceNote.textContent = '🏙️ Aquí va nuestra historia de Rata de Ciudad...';
   if(!ciudadLoopStarted){
     ciudadLoopStarted = true;
     gameLoopCiudad();
@@ -1286,7 +1297,11 @@ function gameLoopCampo() {
       createHeartCampo(m1XCampo + 15, 160);
     }
 
-    drawSubtitleCampo("En un mundo donde tengamos poco o mucho...\nyo siempre elegiría estar contigo. 💖", "ELLA:");
+    if (timerCampo < 600) {
+      drawSubtitleCampo("En un mundo donde tengamos poco o mucho...\nyo siempre elegiría estar contigo. 💖", "ELLA:");
+    } else {
+      drawSubtitleCampo("-- FIN --");
+    }
   }
 
   updateParticlesCampo();
@@ -1616,7 +1631,11 @@ function gameLoopCiudad() {
       createHeartCiudad(m1XCiudad + 15, 160);
     }
 
-    drawSubtitleCiudad("No importa qué tan cruel sea la ciudad ni los gatos que acechen,\nmientras estemos juntos, este lugar es perfecto. 💖", "ELLA:");
+    if (timerCiudad < 600) {
+      drawSubtitleCiudad("No importa qué tan cruel sea la ciudad ni los gatos que acechen,\nmientras estemos juntos, este lugar es perfecto. 💖", "ELLA:");
+    } else {
+      drawSubtitleCiudad("-- FIN --");
+    }
   }
 
   updateParticlesCiudad();
