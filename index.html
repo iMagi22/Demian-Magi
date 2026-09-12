@@ -1206,7 +1206,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("Llevamos mucho tiempo buscando...\nLa comida no abunda por aquí.", "ÉL:");
 
-    if (timerCampo > 400) { stateCampo = 3; timerCampo = 0; }
+    if (timerCampo > 240) { stateCampo = 3; timerCampo = 0; }
   }
   else if (stateCampo === 3) {
     if (m1XCampo < 490) {
@@ -1228,7 +1228,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("¡Mira! Encontré un pedacito de queso...", "ÉL:");
 
-    if (timerCampo > 450) { stateCampo = 5; timerCampo = 0; }
+    if (timerCampo > 270) { stateCampo = 5; timerCampo = 0; }
   }
   else if (stateCampo === 5) {
     timerCampo++;
@@ -1237,7 +1237,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("Sé que es muy poco, pero quiero que te lo quedes tú.\nNecesitas comer algo.", "ÉL:");
 
-    if (timerCampo > 500) { stateCampo = 6; timerCampo = 0; }
+    if (timerCampo > 300) { stateCampo = 6; timerCampo = 0; }
   }
   else if (stateCampo === 6) {
     if (m2XCampo < 475) {
@@ -1257,7 +1257,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("Ella se acerca a él dulcemente...");
 
-    if (timerCampo > 350) { stateCampo = 7; timerCampo = 0; }
+    if (timerCampo > 210) { stateCampo = 7; timerCampo = 0; }
   }
   else if (stateCampo === 7) {
     timerCampo++;
@@ -1266,7 +1266,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("No me importa que tengamos poca comida...", "ELLA:");
 
-    if (timerCampo > 600) { stateCampo = 8; timerCampo = 0; }
+    if (timerCampo > 360) { stateCampo = 8; timerCampo = 0; }
   }
   else if (stateCampo === 8) {
     timerCampo++;
@@ -1275,7 +1275,7 @@ function gameLoopCampo() {
 
     drawSubtitleCampo("La rata de campo vive libre aunque tenga poco que comer.\nSin trampas, sin gatos y sin miedo.", "ELLA:");
 
-    if (timerCampo > 700) { stateCampo = 9; timerCampo = 0; }
+    if (timerCampo > 420) { stateCampo = 9; timerCampo = 0; }
   }
   else if (stateCampo === 9) {
     timerCampo++;
@@ -1527,7 +1527,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("¡Corre al escondite detrás de la tubería!\n¡No mires atrás!", "ÉL:");
 
-    if (timerCiudad > 720) { stateCiudad = 3; timerCiudad = 0; }
+    if (timerCiudad > 430) { stateCiudad = 3; timerCiudad = 0; }
   }
   else if (stateCiudad === 3) {
     if (m1XCiudad < 500) {
@@ -1552,7 +1552,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("Uff... Lo logramos... perdimos al gato.\nY mira esto... jamás había visto tanta comida junta.", "ÉL:");
 
-    if (timerCiudad > 840) { stateCiudad = 5; timerCiudad = 0; }
+    if (timerCiudad > 500) { stateCiudad = 5; timerCiudad = 0; }
   }
   else if (stateCiudad === 5) {
     timerCiudad++;
@@ -1562,7 +1562,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("Quesos maduros, carne, dulces de panadería...\nEn la ciudad la comida abunda por todas partes.", "ÉL:");
 
-    if (timerCiudad > 840) { stateCiudad = 6; timerCiudad = 0; }
+    if (timerCiudad > 500) { stateCiudad = 6; timerCiudad = 0; }
   }
   else if (stateCiudad === 6) {
     drawFeastCiudad(550, 175);
@@ -1584,7 +1584,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("Ella mira los manjares y luego lo mira con ternura...");
 
-    if (timerCiudad > 600) { stateCiudad = 7; timerCiudad = 0; }
+    if (timerCiudad > 360) { stateCiudad = 7; timerCiudad = 0; }
   }
   else if (stateCiudad === 7) {
     timerCiudad++;
@@ -1594,7 +1594,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("Dicen que la rata de ciudad vive una vida corta y peligrosa,\nsiempre huyendo de trampas y gatos a cambio de lujos...", "ELLA:");
 
-    if (timerCiudad > 960) { stateCiudad = 8; timerCiudad = 0; }
+    if (timerCiudad > 575) { stateCiudad = 8; timerCiudad = 0; }
   }
   else if (stateCiudad === 8) {
     timerCiudad++;
@@ -1604,7 +1604,7 @@ function gameLoopCiudad() {
 
     drawSubtitleCiudad("Es verdad que la vida de una rata de ciudad es corta...\npero quisiera pasar cada segundo de ella a tu lado.", "ELLA:");
 
-    if (timerCiudad > 1080) { stateCiudad = 9; timerCiudad = 0; }
+    if (timerCiudad > 650) { stateCiudad = 9; timerCiudad = 0; }
   }
   else if (stateCiudad === 9) {
     timerCiudad++;
